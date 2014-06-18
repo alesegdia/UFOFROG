@@ -12,6 +12,9 @@ function love.conf(t)
 	t.window.height = height
 end
 
+function dot_product( x1, y1, x2, y2 )
+	return x1 * x2 + y1 * y2
+end
 
 function love.load()
 
@@ -30,6 +33,8 @@ function love.load()
 	hero.y = hero.starty
 	hero.speed = 200
 	hero.angle = 0
+
+	spawned = 0
 
 	hero_anim = newAnimation( love.graphics.newImage("ranamadre.png"), 60, 42, 0.1, -1 )
 	hero_anim:addFrame(0, 0, 60, 42, 1)
@@ -71,10 +76,11 @@ function love.load()
 
 end
 
-function spawn_enemy( angle, sped )
-	local rand = math.pi*2 - love.math.random( 0, 31416 ) / 10000
-	local pos = rotate_over( 0, 800, huevos_y_offset - 20, huevos_y_offset - 60, rand )
+function spawn_enemy( sped )
+	local rand = math.pi*2 - love.math.random( 8000, 40000 ) / 10000
+	local pos = rotate_over( 0, 800, huevos_x_offset - 60, huevos_y_offset - 60, rand )
 	local animat = newAnimation( love.graphics.newImage("bicho.png"), 56, 78, 0, -1 )
+	local enemy_new_pos = normalize( pos.x - huevos_x_offset, pos.y - huevos_y_offset )
 
 	animat:addFrame(42,0,42,78,0.1)		-- aleta izq
 	animat:addFrame(84,0,42,78,0.1)		-- mordisco
@@ -82,7 +88,7 @@ function spawn_enemy( angle, sped )
 	animat:addFrame(84,0,42,78,0.1)		-- mordisco
 	animat:setMode("bounce")
 
-	local enemy = { x = pos.x, y = pos.y, speed = sped, anim = animat, angle = angl }
+	local enemy = { x = pos.x, y = pos.y, speed = sped, anim = animat, angle = 5*math.pi/4-rand, dir = { x = enemy_new_pos.x, y = enemy_new_pos.y } }
 	table.insert( enemies, enemy )
 end
 
@@ -103,13 +109,23 @@ function signo(num)
 end
 
 function normalize(vx, vy)
-	local mod = math.sqrt((vx * vx) + (vy * vy))
+	local mod = vecmod(vx,vy)
 	return  { x = vx / mod, y = vy / mod }
 end
 
+function vecmod(vx, vy)
+	return math.sqrt((vx * vx) + (vy * vy))
+end
+
+
 function love.update(dt)
 
-	if math.floor(shader_time+0.5) % 5 == 0 then spawn_enemy(1,1) end
+	if spawned < 0 then
+		spawn_enemy(5)
+		spawned = 100
+	else
+		spawned = spawned - 1
+	end
 	print(shader_time)
 
 	-- cam animation
@@ -137,11 +153,10 @@ function love.update(dt)
 	end
 
 	-- enemigos update
-	for k,enemy in pairs(enemies) do
-		local enemy_new_pos = normalize( enemy.x - huevos_x_offset, enemy.y - huevos_y_offset )
-		enemy.x = (enemy.x - enemy_new_pos.x * enemy.speed)
-		enemy.y = (enemy.y - enemy_new_pos.y * enemy.speed)
-		enemy.anim:update(dt)
+	for k, enemy in pairs(enemies) do
+		enemy.x = (enemy.x - enemy.dir.x * enemy.speed)
+		enemy.y = (enemy.y - enemy.dir.y * enemy.speed)
+		enemy.anim:update(dt, enemy.angle,1,1,0,0)
 	end
 
 	-- hero rotation update
@@ -159,10 +174,14 @@ function love.update(dt)
 	if love.keyboard.isDown("left") then hero.angle = hero.angle + step
 	elseif love.keyboard.isDown("right") then hero.angle = hero.angle - step end
 
+	local do_shoot = false
 	if love.keyboard.isDown(" ") or love.keyboard.isDown("up") then
+		do_shoot = true
 		shake_current = shake_current + 1 * signo( shake_current )
 		if math.abs( shake_current ) > 1000 then shake_current = 1000 * signo( shake_current ) end
 	else shake_current= shake_current * 0.9 end
+
+	if do_shoot then player_shot() end
 
 	-- camera shake
 	camera:setPosition( 0, 0 )
@@ -173,6 +192,23 @@ function love.update(dt)
 	shake_current = shake_current * (-1)
 
 end
+
+--[[
+function player_shot()
+	local angle = hero.angle
+	local animat = newAnimation( love.graphics.newImage("bicho.png"), 56, 78, 0, -1 )
+
+	animat:addFrame(42,0,42,78,0.1)		-- aleta izq
+	animat:addFrame(84,0,42,78,0.1)		-- mordisco
+	animat:addFrame(126,0,42,78,0.1)	-- aleta der
+	animat:addFrame(84,0,42,78,0.1)		-- mordisco
+	animat:setMode("bounce")
+
+	local enemy = { x = pos.x, y = pos.y, speed = sped, anim = animat, angle = 5*math.pi/4-rand, dir = { x = enemy_new_pos.x, y = enemy_new_pos.y } }
+	table.insert( enemies, enemy )
+
+end
+]]--
 
 function love.draw()
 
@@ -194,7 +230,7 @@ function love.draw()
 	end
 
 	for k,enemy in pairs(enemies) do
-		enemy.anim:draw(enemy.x, enemy.y)
+		enemy.anim:draw(enemy.x, enemy.y, enemy.angle)
 	end
 
 

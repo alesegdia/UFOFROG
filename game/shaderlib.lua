@@ -8,8 +8,6 @@ shaderepi_effect = [[
 		vec4 effect( vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords )
 		{
 			return vec4((1.0+sin(time))/2.0, abs(cos(time*3)), abs(sin(time*2)), 1.0);
-			//vec4 texcolor = Texel(texture, texture_coords);
-			//return texcolor * color * vec4( 0.8, 0.8, 0.8, 1);
 		}
 	]]
 
@@ -27,11 +25,7 @@ shadercombo = [[
 			number p = (floor(xnew/pixelfact + 0.5)*pixelfact) / 100;
 			number q = (floor(ynew/pixelfact + 0.5)*pixelfact);
 			vec3 psych_effect = vec3(1.5+sin(p+time*factime),2+sin(p+time*factime),1+sin(p+time*factime)) * vec3(q+150)/600 * vec3((1.0+sin(time*factime))/2.0, abs(cos(time*factime*3)), abs(sin(factime*time*2)));
-			//return factor * psych_effect + (1-factor) * psych_effect;
 			return vec4( epi_effect * factor + psych_effect * (1-factor), 1 );
-
-			//vec4 texcolor = Texel(texture, texture_coords);
-			//return texcolor * color * vec4( 0.8, 0.8, 0.8, 1);
 		}
 	]]
 
@@ -43,8 +37,6 @@ shaderwave = [[
 	{
 		number p = (screen_coords.x) / 100;
 		return vec4(1.5+sin(p+time),2+sin(p+time),1+sin(p+time),1.0) * vec4(screen_coords.y+150)/600 * vec4((1.0+sin(time))/2.0, abs(cos(time*3)), abs(sin(time*2)), 1.0);
-		//vec4 texcolor = Texel(texture, texture_coords);
-		//return texcolor * color * vec4( 0.8, 0.8, 0.8, 1);
 	}
 ]]
 
@@ -52,12 +44,12 @@ shaderwave2 = [[
 	// helper function, please ignore
 	number _hue(number s, number t, number h)
 	{
-	h = mod(h, 1.);
-	number six_h = 6.0 * h;
-	if (six_h < 1.) return (t-s) * six_h + s;
-	if (six_h < 3.) return t;
-	if (six_h < 4.) return (t-s) * (4.-six_h) + s;
-	return s;
+		h = mod(h, 1.);
+		number six_h = 6.0 * h;
+		if (six_h < 1.) return (t-s) * six_h + s;
+		if (six_h < 3.) return t;
+		if (six_h < 4.) return (t-s) * (4.-six_h) + s;
+		return s;
 	}
 
 	// input: vec4(h,s,l,a), with h,s,l,a = 0..1
