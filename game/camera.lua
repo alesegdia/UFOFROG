@@ -8,9 +8,9 @@ end
 -- Code by BlackBulletIV: https://gist.github.com/BlackBulletIV/961685
 --
 -- CHANGES:
--- 		+ camera:setScale
--- 		+ camera:setRotation
--- 		+ center origin rotation
+-- 		+ added camera:setScale
+-- 		+ added camera:setRotation
+-- 		+ changed origin rotation to center
 
 camera = {}
 camera._x = 0

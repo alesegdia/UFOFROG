@@ -14,6 +14,7 @@ EXTERNAL
 
 * **camera.lua**, modified version of https://gist.github.com/BlackBulletIV/961685
 * **AnAL**, animation lib for löve http://love2d.org/wiki/AnAL
+* **hump**, love tools https://github.com/vrld/hump
 
 
 LICENSE

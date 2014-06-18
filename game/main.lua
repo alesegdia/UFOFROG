@@ -72,17 +72,17 @@ function love.load()
 end
 
 function spawn_enemy( angle, sped )
-	local rand = love.math.random( 0, 31416 ) / 10000
-	local pos = rotate_over( 0, 722, huevos_y_offset, huevos_y_offset, rand )
-	local animat = newAnimation( love.graphics.newImage("bicho.png"), 56, 78, 0.1, -1 )
+	local rand = math.pi*2 - love.math.random( 0, 31416 ) / 10000
+	local pos = rotate_over( 0, 800, huevos_y_offset - 20, huevos_y_offset - 60, rand )
+	local animat = newAnimation( love.graphics.newImage("bicho.png"), 56, 78, 0, -1 )
 
-	animat:addFrame(56,0,56,78,0.1)		-- aleta izq
-	animat:addFrame(112,0,56,78,0.1)	-- mordisco
-	animat:addFrame(168,0,56,78,0.1)	-- aleta der
-	animat:addFrame(112,0,56,78,0.1)	-- mordisco
+	animat:addFrame(42,0,42,78,0.1)		-- aleta izq
+	animat:addFrame(84,0,42,78,0.1)		-- mordisco
+	animat:addFrame(126,0,42,78,0.1)	-- aleta der
+	animat:addFrame(84,0,42,78,0.1)		-- mordisco
 	animat:setMode("bounce")
 
-	local enemy = { x = pos.x, y = pos.y, speed = sped, anim = animat }
+	local enemy = { x = pos.x, y = pos.y, speed = sped, anim = animat, angle = angl }
 	table.insert( enemies, enemy )
 end
 
@@ -102,7 +102,15 @@ function signo(num)
 	return -1
 end
 
+function normalize(vx, vy)
+	local mod = math.sqrt((vx * vx) + (vy * vy))
+	return  { x = vx / mod, y = vy / mod }
+end
+
 function love.update(dt)
+
+	if math.floor(shader_time+0.5) % 5 == 0 then spawn_enemy(1,1) end
+	print(shader_time)
 
 	-- cam animation
 	shader_time = shader_time + dt * 10
@@ -130,7 +138,9 @@ function love.update(dt)
 
 	-- enemigos update
 	for k,enemy in pairs(enemies) do
-		local enemy_new_pos = 0
+		local enemy_new_pos = normalize( enemy.x - huevos_x_offset, enemy.y - huevos_y_offset )
+		enemy.x = (enemy.x - enemy_new_pos.x * enemy.speed)
+		enemy.y = (enemy.y - enemy_new_pos.y * enemy.speed)
 		enemy.anim:update(dt)
 	end
 
@@ -182,6 +192,11 @@ function love.draw()
 	for k,huevo in pairs(huevos) do
 		huevo.anim:draw(huevo.x, huevo.y)
 	end
+
+	for k,enemy in pairs(enemies) do
+		enemy.anim:draw(enemy.x, enemy.y)
+	end
+
 
 	camera:unset()
 
