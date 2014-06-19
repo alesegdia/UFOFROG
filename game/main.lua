@@ -22,9 +22,11 @@ function love.load()
 	shader_shake_current = 0
 	shader_time = 0
 	shake_current = 0
+	last_shot = 0
 	camera:setBounds( 0, 0, width, height )
 
 	enemies = {}
+	bullets = {}
 
 	hero = {}
 	hero.startx = 390
@@ -73,24 +75,9 @@ function love.load()
 			table.insert( huevos, huevo )
 		end
 	end
-
 end
 
-function spawn_enemy( sped )
-	local rand = math.pi*2 - love.math.random( 8000, 40000 ) / 10000
-	local pos = rotate_over( 0, 800, huevos_x_offset - 60, huevos_y_offset - 60, rand )
-	local animat = newAnimation( love.graphics.newImage("bicho.png"), 56, 78, 0, -1 )
-	local enemy_new_pos = normalize( pos.x - huevos_x_offset, pos.y - huevos_y_offset )
 
-	animat:addFrame(42,0,42,78,0.1)		-- aleta izq
-	animat:addFrame(84,0,42,78,0.1)		-- mordisco
-	animat:addFrame(126,0,42,78,0.1)	-- aleta der
-	animat:addFrame(84,0,42,78,0.1)		-- mordisco
-	animat:setMode("bounce")
-
-	local enemy = { x = pos.x, y = pos.y, speed = sped, anim = animat, angle = 5*math.pi/4-rand, dir = { x = enemy_new_pos.x, y = enemy_new_pos.y } }
-	table.insert( enemies, enemy )
-end
 
 function rotate_over( px, py, cx, cy, angle )
 	local s, c, xnew, ynew, ppx, ppy
@@ -120,11 +107,10 @@ end
 
 function love.update(dt)
 
-	if spawned < 0 then
+	spawned = spawned - dt
+	if spawned <= 0 then
 		spawn_enemy(5)
-		spawned = 100
-	else
-		spawned = spawned - 1
+		spawned = 0.2
 	end
 	print(shader_time)
 
@@ -152,22 +138,47 @@ function love.update(dt)
 		huevo.anim:update(dt)
 	end
 
+
+	local deleteb = {}
+	local deletee = {}
+
 	-- enemigos update
 	for k, enemy in pairs(enemies) do
 		enemy.x = (enemy.x - enemy.dir.x * enemy.speed)
 		enemy.y = (enemy.y - enemy.dir.y * enemy.speed)
 		enemy.anim:update(dt, enemy.angle,1,1,0,0)
+		if not CheckCollision( enemy.x, enemy.y, enemy.anim:getWidth(), enemy.anim:getHeight(), 0, 0, 800, 600 ) then
+			table.insert( deletee, k )
+		end
 	end
 
-	-- hero rotation update
-	hero_anim:update(dt)
-	if math.abs(hero.angle) > math.pi/2 then hero.angle = math.pi/2 * signo(hero.angle) end
-	local hero_new_pos = rotate_over(
-		hero.startx - hero_anim:getWidth() / 2,
-		hero.starty - hero_anim:getHeight() / 2,
-		huevos_x_offset, huevos_y_offset, hero.angle )
-	hero.x = hero_new_pos.x
-	hero.y = hero_new_pos.y
+
+	for k,bullet in pairs(bullets) do
+		bullet.x = bullet.x + bullet.dir.x * bullet.speed
+		bullet.y = bullet.y + bullet.dir.y * bullet.speed
+		bullet.anim:update(dt, bullet.angle, 1, 1, 0, 0)
+		if not CheckCollision( bullet.x, bullet.y, bullet.anim:getWidth(), bullet.anim:getHeight(), 0, 0, 800, 600 ) then
+			table.insert( deleteb, k )
+		end
+	end
+
+	for ke,e in pairs(enemies) do
+		for kb,b in pairs(bullets) do
+			if CheckCollision( e.x, e.y, e.anim:getWidth(), e.anim:getWidth(), b.x, b.y, b.anim:getWidth(), b.anim:getWidth() ) then
+				table.insert( deletee, ke )
+				table.insert( deleteb, kb )
+			end
+		end
+	end
+
+	for k,v in pairs(deleteb) do
+		table.remove( bullets, v )
+	end
+
+	for k,v in pairs(deletee) do
+		table.remove( enemies, v )
+	end
+
 
 	-- hero keyboard update
 	local step = 0.1
@@ -177,11 +188,25 @@ function love.update(dt)
 	local do_shoot = false
 	if love.keyboard.isDown(" ") or love.keyboard.isDown("up") then
 		do_shoot = true
-		shake_current = shake_current + 1 * signo( shake_current )
+		shake_current = shake_current + 1 * signo( shake_current ) * 0.05
 		if math.abs( shake_current ) > 1000 then shake_current = 1000 * signo( shake_current ) end
 	else shake_current= shake_current * 0.9 end
 
-	if do_shoot then player_shot() end
+	last_shot = last_shot - dt
+	if do_shoot and last_shot <= 0 then
+		player_shot()
+		last_shot = 0.03
+	end
+
+	-- hero rotation update
+	hero_anim:update(dt)
+	if math.abs(hero.angle) > math.pi/2 then hero.angle = math.pi/2 * signo(hero.angle) end
+	local hero_new_pos = rotate_over(
+		hero.startx,
+		hero.starty,
+		huevos_x_offset, huevos_y_offset, hero.angle )
+	hero.x = hero_new_pos.x
+	hero.y = hero_new_pos.y
 
 	-- camera shake
 	camera:setPosition( 0, 0 )
@@ -191,12 +216,47 @@ function love.update(dt)
 	else camera:move( shake_current * cam_random_shake_y, -shake_current * cam_random_shake_x ) end
 	shake_current = shake_current * (-1)
 
+
 end
 
---[[
-function player_shot()
-	local angle = hero.angle
+function CheckCollision(x1,y1,w1,h1, x2,y2,w2,h2)
+  return x1 < x2+w2 and
+         x2 < x1+w1 and
+         y1 < y2+h2 and
+         y2 < y1+h1
+end
+
+function spawn_enemy( sped )
 	local animat = newAnimation( love.graphics.newImage("bicho.png"), 56, 78, 0, -1 )
+	animat:addFrame(42,0,42,78,0.1)		-- aleta izq
+	animat:addFrame(84,0,42,78,0.1)		-- mordisco
+	animat:addFrame(126,0,42,78,0.1)	-- aleta der
+	animat:addFrame(84,0,42,78,0.1)		-- mordisco
+	animat:setMode("bounce")
+
+	                                  -- tres decimales, sobrado
+	local rand = love.math.random( 0, 1000 * math.pi ) / 1000 - math.pi/2
+	local pos = rotate_over( 400 - animat:getWidth()/2, 0, huevos_x_offset, huevos_y_offset, rand )
+	local enemy_dir = normalize( pos.x - huevos_x_offset, pos.y - huevos_y_offset )
+
+
+	local enemy = { active = true, x = pos.x, y = pos.y, speed = sped, anim = animat, angle = -rand, dir = { x = enemy_dir.x, y = enemy_dir.y } }
+	print("grados rand", rand)
+	table.insert( enemies, enemy )
+end
+
+function player_shot()
+	local animat = newAnimation( love.graphics.newImage("tiro0.png"), 13, 30, 0, 0 )
+	local pos = rotate_over( 400 - animat:getWidth()/2, 400, huevos_x_offset, huevos_y_offset, hero.angle )
+	local bullet_dir = normalize( pos.x - huevos_x_offset, pos.y - huevos_y_offset )
+	local bullet = { active = true, x = pos.x , y = pos.y , speed = 15, anim = animat, angle = hero.angle, dir = { x = bullet_dir.x, y = bullet_dir.y }  }
+	table.insert( bullets, bullet )
+
+	--[[
+	local rand = math.pi*2 - love.math.random( 8000, 40000 ) / 10000
+	local pos = rotate_over( 0, 800, huevos_x_offset - 60, huevos_y_offset - 60, rand )
+	local animat = newAnimation( love.graphics.newImage("bicho.png"), 56, 78, 0, -1 )
+	local enemy_new_pos = normalize( pos.x - huevos_x_offset, pos.y - huevos_y_offset )
 
 	animat:addFrame(42,0,42,78,0.1)		-- aleta izq
 	animat:addFrame(84,0,42,78,0.1)		-- mordisco
@@ -206,9 +266,9 @@ function player_shot()
 
 	local enemy = { x = pos.x, y = pos.y, speed = sped, anim = animat, angle = 5*math.pi/4-rand, dir = { x = enemy_new_pos.x, y = enemy_new_pos.y } }
 	table.insert( enemies, enemy )
+	--]]
 
 end
-]]--
 
 function love.draw()
 
@@ -219,20 +279,21 @@ function love.draw()
 	love.graphics.rectangle("fill",-100,-100,width+200,height+200)
 	love.graphics.setShader()
 
-	-- draw hero
-	-- mirar origin offset!! esta en la funcion esta draw
-	-- https://love2d.org/wiki/love.graphics.draw
-	hero_anim:draw( hero.x, hero.y, -hero.angle )
-
 	-- draw huevos
 	for k,huevo in pairs(huevos) do
 		huevo.anim:draw(huevo.x, huevo.y)
 	end
 
 	for k,enemy in pairs(enemies) do
-		enemy.anim:draw(enemy.x, enemy.y, enemy.angle)
+		enemy.anim:draw(enemy.x, enemy.y, enemy.angle, 1, 1, enemy.anim:getWidth()/2, enemy.anim:getHeight()/2)
 	end
 
+
+	for k,bullet in pairs(bullets) do
+		bullet.anim:draw(bullet.x, bullet.y, -bullet.angle, 1, 1, bullet.anim:getWidth()/2, bullet.anim:getHeight()/2)
+	end
+
+	hero_anim:draw( hero.x, hero.y, -hero.angle, 1, 1, hero_anim:getWidth()/2, hero_anim:getHeight()/2 )
 
 	camera:unset()
 
