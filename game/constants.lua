@@ -1,0 +1,3 @@
+
+ENEMY_SPEED = 5
+

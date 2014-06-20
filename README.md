@@ -1,13 +1,3 @@
-
-TODO
-----
-
-* Clean shaders
-* Maybe use HardonCollider http://vrld.github.io/HardonCollider/
-* Fix player rotation (origin), https://love2d.org/wiki/love.graphics.draw
-* Use hump (vectors, gamestates? ...) https://github.com/vrld/hump
-
-
 EXTERNAL
 ----
 
