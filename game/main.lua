@@ -5,6 +5,7 @@ require "AnAL"
 require "constants"
 require "class"
 require "enemy"
+require "razzmathazz"
 
 local width = 800
 local height = 600
