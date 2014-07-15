@@ -28,3 +28,29 @@ function vecmod(vx, vy)
 	return math.sqrt((vx * vx) + (vy * vy))
 end
 
+
+function collision_aabb(x1,y1,w1,h1, x2,y2,w2,h2)
+  return x1 < x2+w2 and
+         x2 < x1+w1 and
+         y1 < y2+h2 and
+         y2 < y1+h1
+end
+
+
+function collision_point_obb( xo,yo,wo,ho, px,py, angle )
+	local newpoint = rotate_vector( 0,0,px,py,math.pi/2 + angle )
+	local newy = newpoint.y--math.sin(angle) * (py - yo) + math.cos(angle) * (px - xo)
+	local newx = newpoint.x--math.cos(angle) * (px - xo) - math.sin(angle) * (py - yo)
+	return newy > yo and newy < yo + ho and newx > xo and newx < xo
+end
+
+function distance_point_line( Ax, Ay, Bx, By, Px, Py )
+	--local slope = (p1.y - p2.y) / (p1.x - p2.x)
+	--return math.abs(A*m + B*n + C)/math.sqrt(A*A+B*B)
+	local normal_length = math.sqrt( (Bx-Ax)*(Bx-Ax) + (By-Ay)*(By-Ay) )
+	return math.abs((Px-Ax)*(By-Ay) - (Py-Ay)*(Bx-Ax))/ normal_length
+end
+
+function distance_point_point( Ax, Ay, Bx, By )
+	return math.sqrt((Ax-Bx)*(Ax-Bx)+(Ay-By)*(Ay-By))
+end

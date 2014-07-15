@@ -10,6 +10,7 @@ function Enemy:init( objx, objy, g0, g1 )
 	self.anim:addFrame(126,0,42,78,0.1)		-- aleta der
 	self.anim:addFrame(84,0,42,78,0.1)		-- mordisco
 	self.anim:setMode("bounce")
+	self.hasEgg = false
 
 	self.angle = math.rad( love.math.random( g0, g1 ) - 90 )
 	self.speed = ENEMY_SPEED
@@ -28,6 +29,17 @@ function Enemy:update(dt)
 	return self.y > 600
 end
 
+function Enemy:checkCol(other)
+	return collision_aabb(
+		self.x, self.y, self.anim:getWidth(), self.anim:getHeight(),
+		other.x, other.y, other.anim:getWidth(), other.anim:getHeight()
+	)
+end
 
+function Enemy:draw()
+	self.anim:draw( self.x, self.y, self.angle, 1, 1, self.anim:getWidth()/2, self.anim:getHeight()/2)
+	--drawBox( self )
+
+end
 
 --function Enemy:update( dt )
