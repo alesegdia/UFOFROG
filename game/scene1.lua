@@ -345,7 +345,7 @@ function scene1:draw()
 
   love.graphics.setColor(0,0,0,255)
   love.graphics.setFont(font)
-  love.graphics.printf("...and no one ever saw the light...", 0,0,love.graphics.getWidth(),"center") --love.graphics.getWidth()/2,love.graphics.getHeight()/2, 1000, "center")
+  -- love.graphics.printf("...and no one ever saw the light...", 0,0,love.graphics.getWidth(),"center") --love.graphics.getWidth()/2,love.graphics.getHeight()/2, 1000, "center")
   love.graphics.print("SCORE: " .. tostring(puntos), 0,0)
 
 
