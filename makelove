@@ -2,6 +2,6 @@
 #!/usr/bin/env bash
 
 cd game
-zip ../ufofrog.love *
+zip -r ../ufofrog.love *
 cd ..
 love ufofrog.love

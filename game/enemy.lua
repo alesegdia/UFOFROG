@@ -4,7 +4,7 @@ Enemy = Class:new()
 function Enemy:init( objx, objy, g0, g1 )
 
 	self.active = true
-	self.anim = newAnimation( love.graphics.newImage("bicho.png"), 56, 78, 0, -1 )
+	self.anim = newAnimation( Image.bicho, 56, 78, 0, -1 )
 	self.anim:addFrame(42,0,42,78,0.1)		-- aleta izq
 	self.anim:addFrame(84,0,42,78,0.1)		-- mordisco
 	self.anim:addFrame(126,0,42,78,0.1)		-- aleta der

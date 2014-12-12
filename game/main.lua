@@ -9,12 +9,31 @@ require "explosion"
 require "enemy"
 require "huevos"
 require "hero"
-Timer = require "timer"
+Timer = require "hump.timer"
 require "bullet"
 require "scene1"
 require "razzmathazz"
 local GS = require "gamestate"
 
+-- Creates a proxy via rawset.
+-- Credit goes to vrld: https://github.com/vrld/Princess/blob/master/main.lua
+-- easier, faster access and caching of resources like images and sound
+-- or on demand resource loading
+local function Proxy(f)
+	return setmetatable({}, {__index = function(self, k)
+		local v = f(k)
+		rawset(self, k, v)
+		return v
+	end})
+end
+
+-- some standard proxies
+Image   = Proxy(function(k) return love.graphics.newImage('media/' .. k .. '.png') end)
+SfxOGG  = Proxy(function(k) return love.audio.newSource('media/' .. k .. '.ogg', 'static') end)
+SfxMP3  = Proxy(function(k) return love.audio.newSource('media/' .. k .. '.mp3', 'static') end)
+SfxWAV  = Proxy(function(k) return love.audio.newSource('media/' .. k .. '.wav', 'static') end)
+MusicOGG = Proxy(function(k) return love.audio.newSource('media/' .. k .. '.ogg', 'stream') end)
+MusicMP3 = Proxy(function(k) return love.audio.newSource('media/' .. k .. '.mp3', 'stream') end)
 
 width = 800
 height = 600
@@ -36,26 +55,26 @@ function love.graphics.newImage( ... ) -- new function that sets nearest filter
    img:setFilter( 'nearest', 'nearest' )
    return img
 end
-	upray_anim = newAnimation( love.graphics.newImage("upray.png"), 528, 208, 0.1, 3 )
+	upray_anim = newAnimation( Image.upray, 528, 208, 0.1, 3 )
 	shader_bg = love.graphics.newShader( shadercombo )
-	bgm = love.audio.newSource( "ufofrog_theme.mp3", "stream" )
+	bgm = MusicMP3.ufofrog_theme
 	--love.audio.play(bgm)
 	bgm:play()
 
-	sfx_explo = love.audio.newSource( "explosion.mp3", "static" )
-	sfx_shoot = love.audio.newSource( "shoot.mp3", "static" )
-	sfx_exploinit = love.audio.newSource( "explosionstart.ogg", "static" )
-	sfx_boom = love.audio.newSource( "boom.wav", "static" )
-	sfx_ray = love.audio.newSource( "ray.mp3", "static" )
+	sfx_explo = SfxMP3.explosion
+	sfx_shoot = MusicMP3.shoot
+	sfx_exploinit = SfxOGG.explosionstart
+	sfx_boom = SfxWAV.boom
+	sfx_ray = SfxMP3.ray
 	sfx_ray:setLooping(true)
 
 	sfx_explo:setVolume(0.5)
 	sfx_shoot:setVolume(0.5)
 	sfx_ray:setVolume(0.5)
 
-	bar = newAnimation( love.graphics.newImage("bar.png"), 1, 24, 1, 1 )
-	rayanim = newAnimation( love.graphics.newImage("ray.png"), 24,768, 1, 1 )
-	protect = newAnimation( love.graphics.newImage("protect.png"), 104,104,1,1)
+	bar = newAnimation( Image.bar, 1, 24, 1, 1 )
+	rayanim = newAnimation( Image.ray, 24,768, 1, 1 )
+	protect = newAnimation( Image.protect, 104,104,1,1)
 
 	camera:setBounds( 0, 0, width, height )
 
@@ -72,7 +91,7 @@ function love.update(dt)
 end
 
 
-function love.draw() 
+function love.draw()
 
 
 end
