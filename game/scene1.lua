@@ -5,6 +5,9 @@ scene1 = {}
 font = love.graphics.newFont("thin_pixel-7.ttf", 50)
 font:setFilter("nearest", "nearest", 0)
 
+font2 = love.graphics.newFont("thin_pixel-7.ttf", 70)
+font2:setFilter("nearest", "nearest", 0)
+
 function player_shot()
   if not ray_active then
 	sfx_shoot:rewind()
@@ -38,8 +41,10 @@ function scene1:enter()
   huevos = Huevos:new()
   eclosionado = false
   player_active = true
-endtext = { val = 0 }
-endrect = { val = 0 }
+  endtext = { val = 0 }
+  tobecont = { val = 0 }
+  endrect = { val = 0 }
+  scoreshow = { val = 0 }
 
 end
 
@@ -280,16 +285,31 @@ function scene1:draw()
   love.graphics.setShader()
 
   camera:unset()
+
+  love.graphics.setColor(255,255,255,255)
+  for i=1,enemy_rush do
+	bar:draw( 100 + i , 540 )
+  end
+
   if eclosionado == true then
-	if endrect.val == 0 then 
+	if endrect.val == 0 then
 	  Timer.tween( 5, endrect, { val = 255 } , 'linear', function()
-		Timer.tween( 5, endtext, { val = 255 })
-	  end, 'linear' )
+	  	MusicMP3.ending:play()
+		Timer.tween( 5, endtext, { val = 255 }, 'linear', function()
+		  Timer.tween( 5, tobecont, { val = 255 }, 'linear', function() Timer.tween( 5, scoreshow, { val = 255 } ) end )
+		end)
+	  end)
 	end
 	love.graphics.setColor(0,0,0,endrect.val)
 	love.graphics.rectangle("fill",-100, -100, width+100, height+100)
 	love.graphics.setColor(255,255,255,endtext.val)
 	love.graphics.printf("...and thus a frog was born...", 0,100,love.graphics.getWidth(),"center") --love.graphics.getWidth()/2,love.graphics.getHeight()/2, 1000, "center")
+	love.graphics.setColor(255,255,255,tobecont.val)
+	love.graphics.printf("...TO BE CONTINUED.", 0,400,love.graphics.getWidth(),"center") --love.graphics.getWidth()/2,love.graphics.getHeight()/2, 1000, "center")
+	love.graphics.setColor(255,255,255,scoreshow.val)
+	love.graphics.setFont(font2)
+	love.graphics.printf("YOUR SCORE: " .. tostring(puntos), 0,500, love.graphics.getWidth(), "center")
+	love.graphics.setFont(font)
   end
 
   camera:set()
@@ -339,14 +359,11 @@ function scene1:draw()
 
   camera:unset()
 
-  for i=1,enemy_rush do
-	bar:draw( 100 + i , 540 )
-  end
 
   love.graphics.setColor(0,0,0,255)
   love.graphics.setFont(font)
   -- love.graphics.printf("...and no one ever saw the light...", 0,0,love.graphics.getWidth(),"center") --love.graphics.getWidth()/2,love.graphics.getHeight()/2, 1000, "center")
-  love.graphics.print("SCORE: " .. tostring(puntos), 0,0)
+  love.graphics.print("SCORE - " .. tostring(puntos), 20,0)
 
 
 end
