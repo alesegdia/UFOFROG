@@ -13,7 +13,7 @@ function Huevos:init()
 
 	for i=0,1 do
 		for j=i,2 do
-			local animat = newAnimation( love.graphics.newImage("huevo.png"), 42, 42, 0.1, -1 )
+			local animat = newAnimation( love.graphics.newImage("media/huevo.png"), 42, 42, 0.1, -1 )
 			animat:addFrame(0,0,42,42,0.1)
 			animat:addFrame(42,0,42,42,0.1)
 			animat:addFrame(82,0,42,42,0.1)
@@ -38,7 +38,7 @@ end
 
 function Huevos:eclosionar()
 	for k,v in pairs(self.list) do
-		v.anim = newAnimation( love.graphics.newImage("huevo_out.png"), 28, 32, 0.1, -1 )
+		v.anim = newAnimation( love.graphics.newImage("media/huevo_out.png"), 28, 32, 0.1, -1 )
 		v.anim:addFrame(0, 0, 28, 32, 0.8)
 		v.anim:addFrame(28, 0, 28, 32, 0.05)
 		v.anim:addFrame(0, 0, 28, 32, 0.05)

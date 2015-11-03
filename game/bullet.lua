@@ -4,7 +4,7 @@ Bullet = Class:new()
 
 function Bullet:init( cx, cy, angle )
 
-	self.anim = newAnimation( love.graphics.newImage("tiro0.png"), 13, 30, 0, 0 )
+	self.anim = newAnimation( love.graphics.newImage("media/tiro0.png"), 13, 30, 0, 0 )
 	local pos = rotate_vector( 400 - self.anim:getWidth()/2, 400, cx, cy, angle )
 	self.x = pos.x
 	self.y = pos.y

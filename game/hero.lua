@@ -12,7 +12,7 @@ function Hero:init( )
 	self.angle = HERO_START_ANGLE
 	self.last_shot = 0
 
-	self.anim = newAnimation( love.graphics.newImage("ranamadre.png"), 60, 42, 0.1, -1 )
+	self.anim = newAnimation( love.graphics.newImage("media/ranamadre.png"), 60, 42, 0.1, -1 )
 	self.anim:addFrame(0, 0, 60, 42, 1)
 	self.anim:addFrame(60, 0, 60, 42, 0.1)
 	self.anim:addFrame(0, 0, 60, 42, 0.1)
@@ -29,8 +29,8 @@ function Hero:update(dt,rx,ry)
 
 	-- move update
 	local step = HERO_MOVE_RATE
-	if love.keyboard.isDown("left") then self.angle = self.angle - step
-	elseif love.keyboard.isDown("right") then self.angle = self.angle + step end
+	if love.keyboard.isDown("a") or love.keyboard.isDown("left") then self.angle = self.angle - step
+	elseif love.keyboard.isDown("d") or love.keyboard.isDown("right") then self.angle = self.angle + step end
 
 	-- shot update
 	local do_shoot = false

@@ -3,7 +3,7 @@ Explosion = Class:new()
 
 function Explosion:init(x, y)
 
-	self.anim = newAnimation( love.graphics.newImage("explosion.png"), 64, 64, 0.08, 5 )
+	self.anim = newAnimation( love.graphics.newImage("media/explosion.png"), 64, 64, 0.08, 5 )
 	self.anim:setMode("once")
 	self.anim:play()
 	self.x = x
