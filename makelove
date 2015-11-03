@@ -1,7 +1,0 @@
-
-#!/usr/bin/env bash
-
-cd game
-zip -r ../ufofrog.love *
-cd ..
-love ufofrog.love
