@@ -60,45 +60,45 @@ local width = 800
 local height = 600
 
 function player_shot()
-  if not ray_active then
-	--sfx_shoot:rewind()
-	sfx_shoot:stop()
-	sfx_shoot:play()
-	local bullet = Bullet:new( huevos.x, huevos.y, hero.angle )
-	table.insert( bullets, bullet )
-  end
+	if not ray_active then
+		--sfx_shoot:rewind()
+		sfx_shoot:stop()
+		sfx_shoot:play()
+		local bullet = Bullet:new( huevos.x, huevos.y, hero.angle )
+		table.insert( bullets, bullet )
+	end
 end
 
 
 
 function scene1:enter()
 
-  love.graphics.setDefaultFilter("nearest", "nearest")
-  puntos = 0
-  global_timer = 0
-  shader_shake_current = 0
-  shader_time = 0
-  shake_current = 0
-  ray_active = false
-  shield_active = false
-  shield_power = 1
-  enemies = {}
-  bullets = {}
-  explosions = {}
-  enemy_rush = 0
-  scene_state = "prelude"
-  hero = Hero:new()
-  enemy_timer = 0
-  level_timer = 0
-  current_level = 0
-  eclosion_timer = 0
-  huevos = Huevos:new()
-  eclosionado = false
-  player_active = true
-  endtext = { val = 0 }
-  tobecont = { val = 0 }
-  endrect = { val = 0 }
-  scoreshow = { val = 0 }
+	love.graphics.setDefaultFilter("nearest", "nearest")
+	puntos = 0
+	global_timer = 0
+	shader_shake_current = 0
+	shader_time = 0
+	shake_current = 0
+	ray_active = false
+	shield_active = false
+	shield_power = 1
+	enemies = {}
+	bullets = {}
+	explosions = {}
+	enemy_rush = 0
+	scene_state = "prelude"
+	hero = Hero:new()
+	enemy_timer = 0
+	level_timer = 0
+	current_level = 0
+	eclosion_timer = 0
+	huevos = Huevos:new()
+	eclosionado = false
+	player_active = true
+endtext = { val = 0 }
+tobecont = { val = 0 }
+	endrect = { val = 0 }
+	scoreshow = { val = 0 }
 
 	upray_anim = newAnimation( Image.upray, 528, 208, 0.1, 3 )
 	shader_bg = love.graphics.newShader( shadercombo )
@@ -125,20 +125,20 @@ function scene1:enter()
 end
 
 function killAll()
-  huevos:eclosionar()
-  for k in pairs (enemies) do
-	spawnExplosion(enemies[k].x, enemies[k].y)
-	enemies [k] = nil
-  end
-  for k in pairs (bullets) do
-	bullets [k] = nil
-  end
-  player_active = false
-  spawnExplosion(hero.x, hero.y)
+	huevos:eclosionar()
+	for k in pairs (enemies) do
+		spawnExplosion(enemies[k].x, enemies[k].y)
+		enemies [k] = nil
+	end
+	for k in pairs (bullets) do
+		bullets [k] = nil
+	end
+	player_active = false
+	spawnExplosion(hero.x, hero.y)
 end
 
 function spawnExplosion(x,y)
-  table.insert( explosions, Explosion:new( x-40, y-40 ) )
+	table.insert( explosions, Explosion:new( x-40, y-40 ) )
 end
 
 local ray_playing = false
@@ -357,94 +357,94 @@ function scene1:update(dt)
 end
 
 function scene1:draw()
-  --love.graphics.print("asd ola q ase", 300, 300)
-  camera:set()
+	--love.graphics.print("asd ola q ase", 300, 300)
+	camera:set()
 
-  -- draw bg
-  love.graphics.setShader(shader_bg)
-  love.graphics.rectangle("fill",-100,-100,width+200,height+200)
-  love.graphics.setShader()
+	-- draw bg
+	love.graphics.setShader(shader_bg)
+	love.graphics.rectangle("fill",-100,-100,width+200,height+200)
+	love.graphics.setShader()
 
-  camera:unset()
+	camera:unset()
 
-  love.graphics.setColor(255,255,255,255)
-  for i=1,enemy_rush do
-	bar:draw( 100 + i , 540 )
-  end
-
-  if eclosionado == true then
-	if endrect.val == 0 then
-	  Timer.tween( 5, endrect, { val = 255 } , 'linear', function()
-	  	MusicMP3.ending:play()
-		Timer.tween( 5, endtext, { val = 255 }, 'linear', function()
-		  Timer.tween( 5, tobecont, { val = 255 }, 'linear', function() Timer.tween( 5, scoreshow, { val = 255 } ) end )
-		end)
-	  end)
+	love.graphics.setColor(255,255,255,255)
+	for i=1,enemy_rush do
+		bar:draw( 100 + i , 540 )
 	end
-	love.graphics.setColor(0,0,0,endrect.val)
-	love.graphics.rectangle("fill",-100, -100, width+100, height+100)
-	love.graphics.setColor(255,255,255,endtext.val)
-	love.graphics.printf("...and thus a frog was born...", 0,100,love.graphics.getWidth(),"center") --love.graphics.getWidth()/2,love.graphics.getHeight()/2, 1000, "center")
-	love.graphics.setColor(255,255,255,tobecont.val)
-	love.graphics.printf("...TO BE CONTINUED.", 0,400,love.graphics.getWidth(),"center") --love.graphics.getWidth()/2,love.graphics.getHeight()/2, 1000, "center")
-	love.graphics.setColor(255,255,255,scoreshow.val)
-	love.graphics.setFont(font2)
-	love.graphics.printf("YOUR SCORE: " .. tostring(puntos), 0,500, love.graphics.getWidth(), "center")
+
+	if eclosionado == true then
+		if endrect.val == 0 then
+			Timer.tween( 5, endrect, { val = 255 } , 'linear', function()
+				MusicMP3.ending:play()
+				Timer.tween( 5, endtext, { val = 255 }, 'linear', function()
+					Timer.tween( 5, tobecont, { val = 255 }, 'linear', function() Timer.tween( 5, scoreshow, { val = 255 } ) end )
+				end)
+			end)
+		end
+		love.graphics.setColor(0,0,0,endrect.val)
+		love.graphics.rectangle("fill",-100, -100, width+100, height+100)
+		love.graphics.setColor(255,255,255,endtext.val)
+		love.graphics.printf("...and thus a frog was born...", 0,100,love.graphics.getWidth(),"center") --love.graphics.getWidth()/2,love.graphics.getHeight()/2, 1000, "center")
+		love.graphics.setColor(255,255,255,tobecont.val)
+		love.graphics.printf("...TO BE CONTINUED.", 0,400,love.graphics.getWidth(),"center") --love.graphics.getWidth()/2,love.graphics.getHeight()/2, 1000, "center")
+		love.graphics.setColor(255,255,255,scoreshow.val)
+		love.graphics.setFont(font2)
+		love.graphics.printf("YOUR SCORE: " .. tostring(puntos), 0,500, love.graphics.getWidth(), "center")
+		love.graphics.setFont(font)
+	end
+
+	camera:set()
+	love.graphics.setColor(255,255,255,255)
+
+	-- draw enemies
+	for k,enemy in pairs(enemies) do
+		enemy:draw()
+	end
+
+	if player_active then
+		if ray_active then
+			rayanim:draw( hero.x, hero.y, hero.angle, 1, 1, rayanim:getWidth()-13, rayanim:getHeight() )
+		end
+	end
+
+	-- draw huevos
+	huevos:draw()
+
+	if shield_power < 0 then shield_power = 0 end
+	if shield_active then
+		love.graphics.setColor( 255, 255, 255, shield_power * 255 )
+		protect:draw( huevos.x-45, huevos.y-30 )
+		love.graphics.setColor( 255, 255, 255, 255 )
+	end
+
+	-- draw bullets
+	for k,bullet in pairs(bullets) do
+		bullet:draw()
+	end
+
+	-- draw explosions
+	for k,e in pairs(explosions) do
+		e:draw()
+	end
+
+	if scene_state == "prelude" then
+		if not ray_active and enemy_rush == RAY_FULL then
+			upray_anim:draw(100,100)
+		end
+	end
+
+
+	if player_active then
+		hero.anim:draw( hero.x, hero.y, hero.angle, 1, 1, hero.anim:getWidth()/2, hero.anim:getHeight()/2 )
+	end
+
+	camera:unset()
+
+
+	love.graphics.setColor(0,0,0,255)
 	love.graphics.setFont(font)
-  end
-
-  camera:set()
-  love.graphics.setColor(255,255,255,255)
-
-  -- draw enemies
-  for k,enemy in pairs(enemies) do
-	enemy:draw()
-  end
-
-  if player_active then
-	if ray_active then
-	  rayanim:draw( hero.x, hero.y, hero.angle, 1, 1, rayanim:getWidth()-13, rayanim:getHeight() )
-	end
-  end
-
-  -- draw huevos
-  huevos:draw()
-
-  if shield_power < 0 then shield_power = 0 end
-  if shield_active then
-	love.graphics.setColor( 255, 255, 255, shield_power * 255 )
-	protect:draw( huevos.x-45, huevos.y-30 )
-	love.graphics.setColor( 255, 255, 255, 255 )
-  end
-
-  -- draw bullets
-  for k,bullet in pairs(bullets) do
-	bullet:draw()
-  end
-
-  -- draw explosions
-  for k,e in pairs(explosions) do
-	e:draw()
-  end
-
-  if scene_state == "prelude" then
-	if not ray_active and enemy_rush == RAY_FULL then
-	  upray_anim:draw(100,100)
-	end
-  end
-
-
-  if player_active then
-	hero.anim:draw( hero.x, hero.y, hero.angle, 1, 1, hero.anim:getWidth()/2, hero.anim:getHeight()/2 )
-  end
-
-  camera:unset()
-
-
-  love.graphics.setColor(0,0,0,255)
-  love.graphics.setFont(font)
-  -- love.graphics.printf("...and no one ever saw the light...", 0,0,love.graphics.getWidth(),"center") --love.graphics.getWidth()/2,love.graphics.getHeight()/2, 1000, "center")
-  love.graphics.print("SCORE - " .. tostring(puntos), 20,0)
+	-- love.graphics.printf("...and no one ever saw the light...", 0,0,love.graphics.getWidth(),"center") --love.graphics.getWidth()/2,love.graphics.getHeight()/2, 1000, "center")
+	love.graphics.print("SCORE - " .. tostring(puntos), 20,0)
 
 
 end

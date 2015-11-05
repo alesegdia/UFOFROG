@@ -54,7 +54,7 @@ end
 
 -- Logic
 function love.update( dt )
-	
+
 end
 
 -- Rendering
@@ -64,27 +64,27 @@ end
 
 -- Input
 function love.keypressed()
-	
+
 end
 
 function love.keyreleased()
-	
+
 end
 
 function love.mousepressed()
-	
+
 end
 
 function love.mousereleased()
-	
+
 end
 
 function love.joystickpressed()
-	
+
 end
 
 function love.joystickreleased()
-	
+
 end
 
 io.stdout:setvbuf("no")
