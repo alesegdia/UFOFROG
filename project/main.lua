@@ -10,7 +10,7 @@ LIBRARYPATH = LIBRARYPATH .. "."
 
 
 -- Get the libs manually
-local strict    = require( LIBRARYPATH.."strict"            )
+--local strict    = require( LIBRARYPATH.."strict"            )
 local slam      = require( LIBRARYPATH.."slam"              )
 local Gamestate = require( LIBRARYPATH.."hump.gamestate"    )
 
@@ -29,22 +29,6 @@ TILED_LOADER_PATH = nil
 -- Credit goes to vrld: https://github.com/vrld/Princess/blob/master/main.lua
 -- easier, faster access and caching of resources like images and sound
 -- or on demand resource loading
-local function Proxy(f)
-	return setmetatable({}, {__index = function(self, k)
-		local v = f(k)
-		rawset(self, k, v)
-		return v
-	end})
-end
-
--- some standard proxies
-Image   = Proxy(function(k) return love.graphics.newImage('img/' .. k .. '.png') end)
-SfxOGG  = Proxy(function(k) return love.audio.newSource('sfx/' .. k .. '.ogg', 'static') end)
-SfxMP3  = Proxy(function(k) return love.audio.newSource('sfx/' .. k .. '.mp3', 'static') end)
-SfxWAV  = Proxy(function(k) return love.audio.newSource('sfx/' .. k .. '.wav', 'static') end)
-MusicOGG = Proxy(function(k) return love.audio.newSource('music/' .. k .. '.ogg', 'stream') end)
-MusicMP3 = Proxy(function(k) return love.audio.newSource('music/' .. k .. '.mp3', 'stream') end)
-
 -- Initialization
 function love.load(arg)
 	math.randomseed(os.time())
