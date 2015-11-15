@@ -12,7 +12,7 @@ osxapp=/Applications/love.app/
 
 game=ufofrog
 sources=main.lua src/**/*.lua libs/**/*.lua **/*.lua *.lua maps/*.lua
-res=img/*.* music/*.* sfx/*.* *.ttf
+res=data/*.* img/*.* music/*.* sfx/*.* *.ttf
 
 .PHONY : run test love clean win
 
