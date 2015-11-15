@@ -15,6 +15,7 @@ local slam      = require( LIBRARYPATH.."slam"              )
 local Gamestate = require( LIBRARYPATH.."hump.gamestate"    )
 
 require 'src.states.scene1'
+require 'src.states.scene2'
 require 'constants'
 
 -- Handle some global variables that strict.lua may (incorrectly, ofcourse) complain about:
@@ -49,7 +50,7 @@ function love.load(arg)
 	math.randomseed(os.time())
 	love.graphics.setDefaultFilter("nearest", "nearest")
 	Gamestate.registerEvents()
-	Gamestate.switch(scene1)
+	Gamestate.switch(scene2)
 end
 
 -- Logic
