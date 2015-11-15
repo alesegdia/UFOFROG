@@ -14,8 +14,10 @@ function scene2:enter()
 end
 
 function scene2:update(dt)
+	boss:update(dt)
 end
 
 function scene2:draw()
+	boss:draw(dt)
 end
 
