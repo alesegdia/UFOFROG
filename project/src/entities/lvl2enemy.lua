@@ -40,7 +40,7 @@ end
 
 function Lvl2Enemy:draw()
 	local x, y, w, h = self.world:getRect( self.body )
-	love.graphics.rectangle("line", x, y, w, h)
+	--love.graphics.rectangle("line", x, y, w, h)
 	self.anim:draw(Image.lvl2enemy, x, y)
 end
 
