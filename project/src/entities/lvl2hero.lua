@@ -39,7 +39,7 @@ end
 function Lvl2Hero:draw()
 	local x, y, w, h = self.world:getRect( self.body )
 	love.graphics.rectangle("line", x, y, w, h)
-	self.swim_anim:draw(Image.lvl2hero, x, y)
+	self.anim:draw(Image.lvl2hero, x, y)
 end
 
 function Lvl2Hero:update(dt)
