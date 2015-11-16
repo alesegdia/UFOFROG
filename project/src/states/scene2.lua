@@ -50,6 +50,8 @@ function scene2:update(dt)
 	hero:update(dt)
 	updateGroup(enemies, dt)
 	clearEnemies()
+
+	Timer.update(dt)
 end
 
 function scene2:draw()
