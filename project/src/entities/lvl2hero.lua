@@ -31,7 +31,7 @@ function Lvl2Hero:init(world)
 	self.lastpress = "z"
 	self.speed = { x = 75, y = 50 }
 
-	self.body = {}
+	self.body = { isPlayer = true }
 	world:add(self.body, 0, 0, Image.lvl2hero:getWidth() / 2, Image.lvl2hero:getHeight() / 3)
 
 end
@@ -40,6 +40,11 @@ function Lvl2Hero:draw()
 	local x, y, w, h = self.world:getRect( self.body )
 	love.graphics.rectangle("line", x, y, w, h)
 	self.anim:draw(Image.lvl2hero, x, y)
+end
+
+local col_filter = function(item, other)
+	if other.isEnemy then return "cross" end
+	if other.isBoss and other.isActive == true then return "touch" end
 end
 
 function Lvl2Hero:update(dt)
@@ -95,7 +100,8 @@ function Lvl2Hero:update(dt)
 	local x, y, _, _ = self.world:getRect( self.body )
 	local aX, aY, cols, len = self.world:move( self.body,
 		x + dx * self.boost * self.speed.x * dt,
-		y + dy * self.boost * self.speed.y * dt
+		y + dy * self.boost * self.speed.y * dt,
+		col_filter
 	)
 
 	self.anim:update(dt * self.boost)
