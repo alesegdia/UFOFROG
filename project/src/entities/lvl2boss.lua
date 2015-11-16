@@ -15,32 +15,6 @@ local coords_to_index = function( c, r, cols )
 	return (r-1) * (cols) + c
 end
 
-local createFrameBodyData = function( world, provider, index )
-	return {
-
-		data = provider:eachFrameBox( index, function( box )
-			local handler = {}
-			world:add( handler, unpack(box.data) )
-			return handler
-		end ),
-
-		setActive = function (self, active)
-			for k,v in self.data do
-				v.isActive = active
-			end
-		end,
-
-		activate = function (self)
-			self:setActive(true)
-		end,
-
-		deactivate = function (self)
-			self:setActive(false)
-		end,
-
-	}
-end
-
 function Lvl2Boss:init(world)
 
 	self.world = world
@@ -48,9 +22,9 @@ function Lvl2Boss:init(world)
 	-- physic definition loading
 	local provider = helper_boxedit.newProvider('data/boss2_def.json', 2, 4)
 	self.bodies = {}
-	self.bodies[1] = createFrameBodyData( world, provider, coords_to_index(1, 1, 2) )
-	self.bodies[2] = createFrameBodyData( world, provider, coords_to_index(1, 2, 2) )
-	self.bodies[3] = createFrameBodyData( world, provider, coords_to_index(2, 2, 2) )
+	self.bodies[1] = helper_boxedit.bump.createFrameBodyData( world, provider, coords_to_index(1, 1, 2) )
+	self.bodies[2] = helper_boxedit.bump.createFrameBodyData( world, provider, coords_to_index(1, 2, 2) )
+	self.bodies[3] = helper_boxedit.bump.createFrameBodyData( world, provider, coords_to_index(2, 2, 2) )
 
 	-- animation loading
 	local g = helper_anim8.newGrid(Image.lvl2boss, 2, 4)

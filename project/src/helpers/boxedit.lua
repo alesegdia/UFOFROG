@@ -49,6 +49,35 @@ local _newProvider = function(path, cols, rows)
 	return provider
 end
 
+local _bump = {
+	createFrameBodyData = function(world, provider, index)
+		return {
+
+			data = provider:eachFrameBox( index, function( box )
+				local handler = {}
+				world:add( handler, unpack(box.data) )
+				return handler
+			end ),
+
+			setActive = function (self, active)
+				for k,v in self.data do
+					v.isActive = active
+				end
+			end,
+
+			activate = function (self)
+				self:setActive(true)
+			end,
+
+			deactivate = function (self)
+				self:setActive(false)
+			end,
+
+		}
+	end
+}
+
 return {
-	newProvider = _newProvider
+	newProvider = _newProvider,
+	bump = _bump
 }
