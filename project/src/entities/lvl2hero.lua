@@ -44,6 +44,7 @@ end
 
 function Lvl2Hero:update(dt)
 
+	-- movement boost control
 	local zpress = love.keyboard.isDown("z")
 	local xpress = love.keyboard.isDown("x")
 
@@ -58,22 +59,26 @@ function Lvl2Hero:update(dt)
 	if zpress then self.lastpress = "z" end
 	if xpress then self.lastpress = "x" end
 
+	-- animation depends on movement
 	local newanim
 	if self.boost == 0 then newanim = self.stand_anim
 	else newanim = self.swim_anim end
 
+	-- reset animation if changes
 	if newanim ~= self.anim then
 		newanim.timer = 0
 	end
 
 	self.anim = newanim
 
+	-- check keyboard input
 	local up, down, left, right
 	up = love.keyboard.isDown("up")
 	down = love.keyboard.isDown("down")
 	left = love.keyboard.isDown("left")
 	right = love.keyboard.isDown("right")
 
+	-- compute displacement from keyboard input
 	local dx, dy
 	dx = 0
 	dy = 0
@@ -86,6 +91,7 @@ function Lvl2Hero:update(dt)
 	if right then dx = 1 end
 	if left and right then dx = 0 end
 
+	-- perform movement
 	local x, y, _, _ = self.world:getRect( self.body )
 	local aX, aY, cols, len = self.world:move( self.body,
 		x + dx * self.boost * self.speed.x * dt,
