@@ -37,9 +37,26 @@ function Lvl2Boss:init(world)
 	self.anim = anim8.newAnimation( g(1,1, 1,2, 2,2), {dtn, dtn, 5.0} )
 
 	local that = self
-	self.anim:assignFrameStart(1, function(anim) that.currentBodyData = that.bodies[1] end)
-	self.anim:assignFrameStart(2, function(anim) that.currentBodyData = that.bodies[2] end)
-	self.anim:assignFrameStart(3, function(anim) that.currentBodyData = that.bodies[3] end)
+	self.anim:assignFrameStart(1, function(anim)
+		that.currentBodyData = that.bodies[1]
+		that.bodies[1]:activate()
+		that.bodies[2]:deactivate()
+		that.bodies[3]:deactivate()
+	end)
+
+	self.anim:assignFrameStart(2, function(anim)
+		that.currentBodyData = that.bodies[2]
+		that.bodies[1]:deactivate()
+		that.bodies[2]:activate()
+		that.bodies[3]:deactivate()
+	end)
+
+	self.anim:assignFrameStart(3, function(anim)
+		that.currentBodyData = that.bodies[3]
+		that.bodies[1]:deactivate()
+		that.bodies[2]:deactivate()
+		that.bodies[3]:activate()
+	end)
 
 	self.currentBodyData = self.bodies[1]
 
