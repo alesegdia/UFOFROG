@@ -26,7 +26,7 @@ function Lvl2Enemy:init(world)
 	self.anim = anim8.newAnimation( g(1,1, 2,1), {0.3, 0.1} )
 
 	self.body = { isEnemy = true }
-	world:add(self.body, 1000, love.math.random(0, 600), Image.lvl2enemy:getWidth() / 2, Image.lvl2enemy:getHeight() / 1)
+	world:add(self.body, 1000, love.math.random(0, 400), Image.lvl2enemy:getWidth() / 2, Image.lvl2enemy:getHeight() / 1)
 
 	self.isDead = false
 	self.speed = 0
@@ -58,6 +58,8 @@ function Lvl2Enemy:update(dt)
 
 	local x, y, _, _ = self.world:getRect(self.body)
 	self.world:move(self.body, x - dt * self.speed, y, col_filter)
+
+	if x < -400 then self.isDead = true end
 
 	self.anim:update(dt)
 
