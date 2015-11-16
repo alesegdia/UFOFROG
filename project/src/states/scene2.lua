@@ -21,8 +21,17 @@ local spawnEnemy = function()
 	return enemy
 end
 
-local clearEnemies = function()
-	enemies = filter(function (item) return item.isDead == false end, enemies)
+local clearGroup = function(entities)
+	local todel = filter(function (item) return item.isDead == false end, entities)
+	for i=#entities,1,-1 do
+		local v = entities[i]
+		if v then
+			if v.isDead then
+				table.remove(entities, i)
+			end
+		end
+	end
+	print(#entities)
 end
 
 local updateGroup = function(tbl, dt)
@@ -51,7 +60,7 @@ function scene2:update(dt)
 	boss:update(dt)
 	hero:update(dt)
 	updateGroup(enemies, dt)
-	clearEnemies()
+	clearGroup(enemies)
 
 	Timer.update(dt)
 end
