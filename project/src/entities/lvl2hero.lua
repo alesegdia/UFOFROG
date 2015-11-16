@@ -28,15 +28,18 @@ function Lvl2Hero:init(world)
 	self.stand_anim = anim8.newAnimation( g(1,1), {1} )
 
 	self.boost = 0
-
 	self.lastpress = "z"
-
-	self.pos = { x = 0, y = 0 }
 	self.speed = { x = 75, y = 50 }
+
+	self.body = {}
+	world:add(self.body, 0, 0, Image.lvl2hero:getWidth() / 2, Image.lvl2hero:getHeight() / 3)
+
 end
 
 function Lvl2Hero:draw()
-	self.swim_anim:draw(Image.lvl2hero, self.pos.x, self.pos.y)
+	local x, y, w, h = self.world:getRect( self.body )
+	love.graphics.rectangle("line", x, y, w, h)
+	self.swim_anim:draw(Image.lvl2hero, x, y)
 end
 
 function Lvl2Hero:update(dt)
@@ -55,8 +58,6 @@ function Lvl2Hero:update(dt)
 	if zpress then self.lastpress = "z" end
 	if xpress then self.lastpress = "x" end
 
-	print(self.boost)
-
 	local newanim
 	if self.boost == 0 then newanim = self.stand_anim
 	else newanim = self.swim_anim end
@@ -64,7 +65,6 @@ function Lvl2Hero:update(dt)
 	print(newanim)
 
 	if newanim ~= self.anim then
-		print("tick!")
 		newanim.timer = 0
 	end
 
@@ -88,8 +88,11 @@ function Lvl2Hero:update(dt)
 	if right then dx = 1 end
 	if left and right then dx = 0 end
 
-	self.pos.x = self.pos.x + dx * self.boost * self.speed.x * dt
-	self.pos.y = self.pos.y + dy * self.boost * self.speed.y * dt
+	local x, y, _, _ = self.world:getRect( self.body )
+	local aX, aY, cols, len = self.world:move( self.body,
+		x + dx * self.boost * self.speed.x * dt,
+		y + dy * self.boost * self.speed.y * dt
+	)
 
 	self.anim:update(dt * self.boost)
 
