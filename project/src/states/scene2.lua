@@ -15,7 +15,7 @@ local boss, hero, enemies
 local world
 enemies = {}
 
-local spawnEnemy = function(x, y)
+local spawnEnemy = function()
 	local enemy = Lvl2Enemy( world )
 	table.insert(enemies, enemy)
 	return enemy
@@ -41,7 +41,9 @@ function scene2:enter()
 	world = bump.newWorld( 120 )
 	boss = Lvl2Boss( world )
 	hero = Lvl2Hero( world )
-	enemy = spawnEnemy(0,0)
+	Timer.every(3, function()
+		spawnEnemy()
+	end, 5)
 end
 
 function scene2:update(dt)
