@@ -34,7 +34,7 @@ function Lvl2Boss:init(world)
 	-- animation loading
 	local g = helper_anim8.newGrid(Image.lvl2boss, 2, 4)
 	local dtn = 1
-	self.anim = anim8.newAnimation( g(1,1, 1,2, 2,2), {dtn, dtn, 5.0} )
+	self.anim = anim8.newAnimation( g(1,1, 1,2, 2,2), {2, 0.1, 5.0} )
 
 	local that = self
 	self.anim:assignFrameStart(1, function(anim)
@@ -65,7 +65,7 @@ end
 function Lvl2Boss:draw()
 	for k,v in pairs(self.currentBodyData.data) do
 		local x, y, w, h = self.world:getRect(v)
-		love.graphics.rectangle("line", x, y, w, h)
+		--love.graphics.rectangle("line", x, y, w, h)
 	end
 	self.anim:draw(Image.lvl2boss, 0, 0)
 end
