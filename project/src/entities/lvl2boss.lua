@@ -21,7 +21,6 @@ local createFrameBodyData = function( world, provider, index )
 		data = provider:eachFrameBox( index, function( box )
 			local handler = {}
 			world:add( handler, unpack(box.data) )
-			print( handler )
 			return handler
 		end ),
 

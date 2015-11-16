@@ -62,8 +62,6 @@ function Lvl2Hero:update(dt)
 	if self.boost == 0 then newanim = self.stand_anim
 	else newanim = self.swim_anim end
 
-	print(newanim)
-
 	if newanim ~= self.anim then
 		newanim.timer = 0
 	end
