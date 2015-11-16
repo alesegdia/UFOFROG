@@ -53,6 +53,12 @@ local _bump = {
 	createFrameBodyData = function(world, provider, index)
 		return {
 
+			each = function(self, fun)
+				for k,v in ipairs(self.data) do
+					fun(v)
+				end
+			end,
+
 			data = provider:eachFrameBox( index, function( box )
 				local handler = {}
 				world:add( handler, unpack(box.data) )
