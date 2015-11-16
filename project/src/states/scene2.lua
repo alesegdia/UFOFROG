@@ -8,6 +8,7 @@ require 'libs.functional'
 local Lvl2Boss = require 'src.entities.lvl2boss'
 local Lvl2Hero = require 'src.entities.lvl2hero'
 local Lvl2Enemy = require 'src.entities.lvl2enemy'
+local Lvl2Turtle = require 'src.entities.lvl2turtle'
 
 scene2 = {}
 
@@ -17,7 +18,9 @@ enemies = {}
 
 local spawnEnemy = function()
 	local enemy = Lvl2Enemy( world )
+	local turtle = Lvl2Turtle( world )
 	table.insert(enemies, enemy)
+	table.insert(enemies, turtle)
 	return enemy
 end
 
@@ -50,9 +53,9 @@ function scene2:enter()
 	world = bump.newWorld( 120 )
 	boss = Lvl2Boss( world )
 	hero = Lvl2Hero( world )
-	Timer.every(3, function()
+	Timer.every(1, function()
 		spawnEnemy()
-	end, 5)
+	end)
 end
 
 function scene2:update(dt)
