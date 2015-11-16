@@ -66,7 +66,7 @@ local _bump = {
 			end ),
 
 			setActive = function (self, active)
-				for k,v in self.data do
+				for k,v in pairs(self.data) do
 					v.isActive = active
 				end
 			end,
