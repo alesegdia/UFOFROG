@@ -23,8 +23,13 @@ function Lvl2Boss:init(world)
 	local provider = helper_boxedit.newProvider('data/boss2_def.json', 2, 4)
 	self.bodies = {}
 	self.bodies[1] = helper_boxedit.bump.createFrameBodyData( world, provider, coords_to_index(1, 1, 2) )
+	self.bodies[1]:each( function( element ) element.isBoss = true end )
+
 	self.bodies[2] = helper_boxedit.bump.createFrameBodyData( world, provider, coords_to_index(1, 2, 2) )
+	self.bodies[2]:each( function( element ) element.isBoss = true end )
+
 	self.bodies[3] = helper_boxedit.bump.createFrameBodyData( world, provider, coords_to_index(2, 2, 2) )
+	self.bodies[3]:each( function( element ) element.isBoss = true end )
 
 	-- animation loading
 	local g = helper_anim8.newGrid(Image.lvl2boss, 2, 4)
