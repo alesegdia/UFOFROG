@@ -68,11 +68,11 @@ function Lvl2Boss:init(world)
 end
 
 function Lvl2Boss:draw()
-	self.anim:draw(Image.lvl2boss, 0, 0)
 	for k,v in pairs(self.currentBodyData.data) do
 		local x, y, w, h = self.world:getRect(v)
-		love.graphics.rectangle("fill", x, y, w, h)
+		love.graphics.rectangle("line", x, y, w, h)
 	end
+	self.anim:draw(Image.lvl2boss, 0, 0)
 end
 
 function Lvl2Boss:update(dt)
