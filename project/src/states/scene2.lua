@@ -13,7 +13,7 @@ local Lvl2Turtle = require 'src.entities.lvl2turtle'
 
 scene2 = {}
 
-local boss, hero, entities
+local entities = {}
 local world
 local cam 		= cam.new(0,0,1,0)
 local shader_bg
@@ -27,16 +27,20 @@ local center = {
 
 entities = {}
 
+local spawnTurtle = function()
+	local turtle = Lvl2Turtle( world, entities )
+	table.insert(entities, turtle)
+	return turtle
+end
+
 local spawnEnemy = function()
 	local enemy = Lvl2Enemy( world )
-	local turtle = Lvl2Turtle( world )
 	table.insert(entities, enemy)
-	table.insert(entities, turtle)
 	return enemy
 end
 
 local clearGroup = function(entities)
-	local todel = filter(function (item) return item.isDead == false end, entities)
+	local todel = filter(function (item) return item.isDead == true end, entities)
 	for i=#entities,1,-1 do
 		local v = entities[i]
 		if v then
@@ -45,7 +49,6 @@ local clearGroup = function(entities)
 			end
 		end
 	end
-	print(#entities)
 end
 
 local updateGroup = function(tbl, dt)
@@ -63,10 +66,10 @@ end
 function scene2:enter()
 	shader_bg = love.graphics.newShader( shadercombo )
 	world = bump.newWorld( 120 )
-	table.insert(entities, Lvl2Boss( world ))
+	--table.insert(entities, Lvl2Boss( world ))
 	table.insert(entities, Lvl2Hero( world ))
 	Timer.every(1, function()
-		spawnEnemy()
+		spawnTurtle()
 	end)
 end
 

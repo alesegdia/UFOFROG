@@ -6,6 +6,8 @@ local inspect = require 'libs.inspect'
 local helper_anim8 = require 'src.helpers.anim8'
 local helper_boxedit = require 'src.helpers.boxedit'
 
+local Lvl2Smoke = require 'src.entities.lvl2smoke'
+
 local Timer = require "libs.hump.timer"
 local tween = Timer.tween
 
@@ -14,8 +16,9 @@ require 'src.helpers.proxy'
 local Lvl2Turtle = Class {
 }
 
-function Lvl2Turtle:init(world)
+function Lvl2Turtle:init(world, stage)
 
+	self.stage = stage
 	self.world = world
 
 	-- animation loading
@@ -34,6 +37,12 @@ function Lvl2Turtle:init(world)
 	self.horDisplaceTimer = 0
 	self.scaling = 1
 	self.timer = 0
+
+	local that = self
+	self.timerHandle = Timer.every(0.01, function()
+		local x, y, _, _ = that.world:getRect(that.body)
+		table.insert(that.stage, Lvl2Smoke(x+140, y+70 + math.random(-10, 10), that.scaling))
+	end)
 
 end
 
@@ -64,7 +73,10 @@ function Lvl2Turtle:update(dt)
 
 	self.world:move(self.body, x - dt * self.speed, y, col_filter)
 
-	if x < -400 then self.isDead = true end
+	if x < -400 then
+		self.isDead = true
+		Timer.cancel(self.timerHandle)
+	end
 
 	self.anim:update(dt)
 
