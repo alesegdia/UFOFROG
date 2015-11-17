@@ -6,6 +6,8 @@ local inspect = require 'libs.inspect'
 local helper_anim8 = require 'src.helpers.anim8'
 local helper_boxedit = require 'src.helpers.boxedit'
 
+local Lvl2Smoke = require 'src.entities.lvl2smoke'
+
 require 'src.helpers.proxy'
 
 local MAX_BOOST = 5
@@ -15,8 +17,9 @@ local BOOST_INC_FACTOR = 10
 local Lvl2Hero = Class {
 }
 
-function Lvl2Hero:init(world)
+function Lvl2Hero:init(world, stage)
 
+	self.stage = stage
 	self.world = world
 
 	-- animation loading
@@ -25,6 +28,7 @@ function Lvl2Hero:init(world)
 
 	local drtn = 0.5
 	self.swim_anim = anim8.newAnimation( g(2,1, 1,1, 2,2, 1,1), {drtn, drtn, drtn, drtn} )
+
 	self.stand_anim = anim8.newAnimation( g(1,1), {1} )
 
 	self.boost = 0
@@ -34,6 +38,30 @@ function Lvl2Hero:init(world)
 	self.body = { isPlayer = true }
 	world:add(self.body, 0, 0, Image.lvl2hero:getWidth() / 2, Image.lvl2hero:getHeight() / 3)
 
+	local that = self
+	self.swim_anim:assignFrameStart(1, function()
+		if not self.supermode then
+		if self.boost > 0 then
+			local x, y, _, _ = that.world:getRect(that.body)
+			table.insert(self.stage, Lvl2Smoke(x+20, y+20, 0.8, {r=0, g=255, b=255}))
+		end
+		end
+	end)
+
+	self.swim_anim:assignFrameStart(3, function()
+		if not self.supermode then
+		if self.boost > 0 then
+			local x, y, _, _ = that.world:getRect(that.body)
+			table.insert(self.stage, Lvl2Smoke(x+15, y+40, 0.8, {r=0, g=255, b=255}))
+		end
+		end
+	end)
+
+
+end
+
+function Lvl2Hero:superMode()
+	self.supermode = true
 end
 
 function Lvl2Hero:draw()
@@ -76,12 +104,26 @@ function Lvl2Hero:update(dt)
 
 	self.anim = newanim
 
+	if self.supermode == true then
+		self.anim = self.swim_anim
+		self.boost = 8
+	end
+
 	-- check keyboard input
 	local up, down, left, right
 	up = love.keyboard.isDown("up")
 	down = love.keyboard.isDown("down")
 	left = love.keyboard.isDown("left")
 	right = love.keyboard.isDown("right")
+
+	if not up and not down and not left and not right then
+		self.anim = self.stand_anim
+	else
+		if self.supermode then
+			local x, y, _, _ = self.world:getRect(self.body)
+			table.insert(self.stage, Lvl2Smoke(x+20 + math.random()*10, y+35 + math.random()*10, 1, {r=0, g=255, b=255}))
+		end
+	end
 
 	-- compute displacement from keyboard input
 	local dx, dy

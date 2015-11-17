@@ -3,7 +3,14 @@ local Class = require 'libs.hump.class'
 
 local Lvl2Smoke = Class {}
 
-function Lvl2Smoke:init(x, y, scale)
+function Lvl2Smoke:init(x, y, scale, color)
+
+	if color == nil then
+		self.color = { r = 255, g = 255, b = 255 }
+	else
+		self.color = color
+	end
+
 	self.size = math.random(20,40) * scale
 	self.x, self.y = x, y
 	self.timer = 0
@@ -26,7 +33,7 @@ function Lvl2Smoke:update(dt)
 end
 
 function Lvl2Smoke:draw()
-	love.graphics.setColor(255, 255, 255, 255 - 255 * (self.timer/1) )
+	love.graphics.setColor(self.color.r, self.color.g, self.color.b, 255 - 255 * (self.timer/1) )
 
 	love.graphics.push()
 
