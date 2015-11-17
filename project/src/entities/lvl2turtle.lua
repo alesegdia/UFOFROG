@@ -29,14 +29,18 @@ function Lvl2Turtle:init(world)
 	world:add(self.body, 1000, love.math.random(0, 400), Image.lvl2turtle:getWidth() / 5, Image.lvl2turtle:getHeight() / 1)
 
 	self.isDead = false
-	self.speed = 500
+	self.speed = 750 * (1 + math.random())
+
+	self.horDisplaceTimer = 0
+	self.scaling = 1
+	self.timer = 0
 
 end
 
 function Lvl2Turtle:draw()
 	local x, y, w, h = self.world:getRect( self.body )
 	--love.graphics.rectangle("line", x, y, w, h)
-	self.anim:draw(Image.lvl2turtle, x, y)
+	self.anim:draw(Image.lvl2turtle, x, y, 0, self.scaling, self.scaling)
 end
 
 local col_filter = function(item, other)
@@ -47,6 +51,17 @@ end
 function Lvl2Turtle:update(dt)
 
 	local x, y, _, _ = self.world:getRect(self.body)
+
+	self.horDisplaceTimer = self.horDisplaceTimer + dt
+
+	self.timer = self.timer + dt
+	self.scaling = 1 + math.sin(self.timer * 10)/6
+
+	if self.horDisplaceTimer > 0.01 then
+		self.horDisplaceTimer = 0
+		y = y + love.math.random(-5,5)
+	end
+
 	self.world:move(self.body, x - dt * self.speed, y, col_filter)
 
 	if x < -400 then self.isDead = true end
