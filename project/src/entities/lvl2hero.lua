@@ -44,7 +44,7 @@ end
 
 local col_filter = function(item, other)
 	if other.isEnemy then return "cross" end
-	if other.isBoss and other.isActive == true then return "touch" end
+	if other.isBoss and other.isActive == true then return "cross" end
 end
 
 function Lvl2Hero:update(dt)
