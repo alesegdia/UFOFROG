@@ -27,6 +27,9 @@ function Lvl2Smoke:init(x, y, scale, color, dx)
 	self.rotation = math.random() * 360
 end
 
+function Lvl2Smoke:die()
+end
+
 function Lvl2Smoke:update(dt)
 	self.x = self.x - dt * 500 * self.dx
 	self.timer = self.timer + dt
