@@ -3,7 +3,13 @@ local Class = require 'libs.hump.class'
 
 local Lvl2Smoke = Class {}
 
-function Lvl2Smoke:init(x, y, scale, color)
+function Lvl2Smoke:init(x, y, scale, color, dx)
+
+	if dx == nil then
+		self.dx = 1
+	else
+		self.dx = dx
+	end
 
 	if color == nil then
 		self.color = { r = 255, g = 255, b = 255 }
@@ -18,10 +24,11 @@ function Lvl2Smoke:init(x, y, scale, color)
 	local thesign = 1
 	if math.random() < 0.5 then thesign = -1 end
 	self.rotspeed = math.random() * 4 * thesign
-	self.rotation = 0
+	self.rotation = math.random() * 360
 end
 
 function Lvl2Smoke:update(dt)
+	self.x = self.x - dt * 500 * self.dx
 	self.timer = self.timer + dt
 	if self.timer > 1 then
 		self.isDead = true
