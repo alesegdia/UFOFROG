@@ -10,6 +10,7 @@ local Lvl2Boss = require 'src.entities.lvl2boss'
 local Lvl2Hero = require 'src.entities.lvl2hero'
 local Lvl2Enemy = require 'src.entities.lvl2enemy'
 local Lvl2Turtle = require 'src.entities.lvl2turtle'
+local Lvl2Explosion = require 'src.entities.lvl2explosion'
 
 scene2 = {}
 
@@ -36,7 +37,7 @@ local createNotifier = function(text_, launch, duration_ )
 end
 
 local clearNotifier = function(dt)
-	map(function(element) element.duration = element.duration - dt, print(element.duration) end, notifiers)
+	map(function(element) element.duration = element.duration - dt end, notifiers)
 	notifiers = filter(function(element) return element.duration > 0 end, notifiers)
 end
 
@@ -65,6 +66,7 @@ local clearGroup = function(entities)
 		local v = entities[i]
 		if v then
 			if v.isDead then
+				v:die()
 				table.remove(entities, i)
 			end
 		end
@@ -85,28 +87,51 @@ end
 
 local epilepsy = false
 
+local epilepsyAt = function(spawn, duration, onStart)
+	Timer.after(spawn, function()
+		onStart()
+		epilepsy = true
+		Timer.after(duration, function() epilepsy = false end)
+	end)
+end
+
+local firstTurtleSpawnHandler
+
 function scene2:enter()
 	shader_bg = love.graphics.newShader( shader_stage2 )
 	shader_epi = love.graphics.newShader( shaderepi_effect )
 	world = bump.newWorld( 120 )
 	--table.insert(entities, Lvl2Boss( world ))
 	hero = Lvl2Hero( world, entities )
-	Timer.after(20, function()
-		epilepsy = true
-		Timer.after(1, function() epilepsy = false end)
-		hero:superMode()
-	end)
 	table.insert(entities, hero)
-	Timer.after(10, function()
-		Timer.every(1, function()
-			spawnTurtle()
-		end)
-	end)
+
+	-- learn to swim
 	createNotifier("zxzxzxzximmm", 1, 4)
-	createNotifier("SUPER FROG MODE", 20, 4)
+
+	-- you learnt to swim!
+	epilepsyAt(20, 2, function() hero:superMode() end)
+	createNotifier("LOOK MA!\nKNO TO ZXIM!", 20, 4)
+
+	-- learn to shoot
+	epilepsyAt(40, 2, function() hero:giveShoot() end)
+	createNotifier("shoot... shoooot SHOOOOT!\n(pro tip: space)", 40, 4)
+
+	-- you learnt to shoot!
+	epilepsyAt(60, 2, function() hero:giveSuperShoot() end)
+	createNotifier("SUPER BULLET FROG!!", 60, 4)
+
+	Timer.after(10, function() firstTurtleSpawnHandler = Timer.every(1, spawnTurtle) end)
+	Timer.after(60, function()
+		Timer.cancel(firstTurtleSpawnHandler)
+		Timer.every(0.05, spawnTurtle)
+	end)
+
+	self.timer = 0
 end
 
 function scene2:update(dt)
+
+	self.timer = self.timer + dt
 
 	updateGroup(entities, dt)
 	clearGroup(entities)
@@ -145,6 +170,9 @@ function scene2:update(dt)
 	if not epilepsy then
 	end
 
+	print(world:countItems())
+
+	self.dt = dt
 end
 
 function scene2:draw()
@@ -173,7 +201,7 @@ function scene2:draw()
 		for k,v in pairs(notifiers) do
 			love.graphics.setColor(255, 0, 200, 255)
 			love.graphics.setFont(font2)
-			love.graphics.printf( v.text, center.x, center.y, 200, "center")
+			love.graphics.printf( v.text, 0, 0, 800, "center", 0, 1+math.sin(self.timer*20)/6, 1+math.sin(self.timer*20)/6)
 			love.graphics.setColor(255, 255, 255, 255)
 		end
 	cam:detach()
