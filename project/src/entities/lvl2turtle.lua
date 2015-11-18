@@ -4,9 +4,9 @@ local Class = require 'libs.hump.class'
 local inspect = require 'libs.inspect'
 
 local helper_anim8 = require 'src.helpers.anim8'
-local helper_boxedit = require 'src.helpers.boxedit'
 
 local Lvl2Smoke = require 'src.entities.lvl2smoke'
+local Lvl2Explosion = require 'src.entities.lvl2explosion'
 
 local Timer = require "libs.hump.timer"
 local tween = Timer.tween
@@ -28,7 +28,7 @@ function Lvl2Turtle:init(world, stage)
 	local drtn = 0.5
 	self.anim = anim8.newAnimation( g(1,1, 2,1, 3,1, 4,1, 5,1), {0.05, 0.05, 0.05, 0.05, 0.05} )
 
-	self.body = { isEnemy = true }
+	self.body = { isEnemy = true, isTurtle = true }
 	world:add(self.body, 1000, love.math.random(0, 400), Image.lvl2turtle:getWidth() / 5, Image.lvl2turtle:getHeight() / 1)
 
 	self.isDead = false
@@ -55,6 +55,12 @@ end
 local col_filter = function(item, other)
 	if other.isBoss ~= true and not other.isEnemy ~= true then return nil end
 	if other.isPlayer == true then return "cross" end
+	if other.isBullet == true then return "cross" end
+end
+
+function Lvl2Turtle:die()
+	self.world:remove(self.body)
+	Timer.cancel(self.timerHandle)
 end
 
 function Lvl2Turtle:update(dt)
@@ -71,11 +77,24 @@ function Lvl2Turtle:update(dt)
 		y = y + love.math.random(-5,5)
 	end
 
-	self.world:move(self.body, x - dt * self.speed, y, col_filter)
+	local aX, aY, cols, len = self.world:move(self.body, x - dt * self.speed, y, col_filter)
 
 	if x < -400 then
 		self.isDead = true
-		Timer.cancel(self.timerHandle)
+	end
+
+	for i=1,len do
+		local col = cols[i]
+		if col.other.isBullet then
+			self.isDead = true
+			Timer.cancel(self.timerHandle)
+			Timer.after(0, function()
+				table.insert(self.stage, Lvl2Explosion(aX + 40 + math.random(10,20), aY+40 + math.random(1,10), 0.75))
+			end)
+			Timer.after(0.2, function()
+				table.insert(self.stage, Lvl2Explosion(aX + 40, aY + 40, 1))
+			end)
+		end
 	end
 
 	self.anim:update(dt)
