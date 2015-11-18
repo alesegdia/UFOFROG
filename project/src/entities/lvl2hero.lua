@@ -2,6 +2,7 @@
 local anim8 = require 'libs.anim8.anim8'
 local Class = require 'libs.hump.class'
 local inspect = require 'libs.inspect'
+local Timer = require "libs.hump.timer"
 
 local helper_anim8 = require 'src.helpers.anim8'
 local helper_boxedit = require 'src.helpers.boxedit'
@@ -36,7 +37,7 @@ function Lvl2Hero:init(world, stage)
 	self.speed = { x = 75, y = 50 }
 
 	self.body = { isPlayer = true }
-	world:add(self.body, 0, 0, Image.lvl2hero:getWidth() / 2, Image.lvl2hero:getHeight() / 3)
+	world:add(self.body, 600, 300, Image.lvl2hero:getWidth() / 2, Image.lvl2hero:getHeight() / 3)
 
 	local that = self
 	self.swim_anim:assignFrameStart(1, function()
@@ -57,21 +58,37 @@ function Lvl2Hero:init(world, stage)
 		end
 	end)
 
+	self.rotation = 0
+	self.tw = Image.lvl2hero:getWidth() / 2
+	self.th = Image.lvl2hero:getHeight() / 3
+
+	self.resistance = 300
 
 end
 
 function Lvl2Hero:superMode()
 	self.supermode = true
+	self.resistance = 100
+
+	Timer.every(0.03, function()
+		local x, y, _, _ = self.world:getRect(self.body)
+		--table.insert(self.stage, Lvl2Smoke(x+40 + math.random()*10, y+40 + math.random()*10, 1, {r=0, g=255, b=255}))
+		--table.insert(self.stage, Lvl2Smoke(x+50 + math.random()*10, y+40 + math.random()*10, 2.5, {r=0, g=255, b=255}, 2))
+		table.insert(self.stage, Lvl2Smoke(x+30 + math.random()*10, y+40 + math.random()*10, 2, {r=0, g=255, b=255}, 2))
+	end)
 end
 
 function Lvl2Hero:draw()
 	local x, y, w, h = self.world:getRect( self.body )
 	--love.graphics.rectangle("line", x, y, w, h)
-	self.anim:draw(Image.lvl2hero, x, y)
+	self.anim:draw(Image.lvl2hero, x+self.tw/2, y+self.th/2, self.rotation, 1, 1, self.tw/2, self.th/2)
 end
 
+-- IF COLLIDE WITH TURTLE, RESISTANCE BOOST WHILE COLLIDING
 local col_filter = function(item, other)
-	if other.isEnemy then return "cross" end
+	if other.isEnemy then
+		return "cross"
+	end
 	if other.isBoss and other.isActive == true then return "cross" end
 end
 
@@ -107,6 +124,9 @@ function Lvl2Hero:update(dt)
 	if self.supermode == true then
 		self.anim = self.swim_anim
 		self.boost = 8
+
+		local x, y, _, _ = self.world:getRect(self.body)
+		--table.insert(self.stage, Lvl2Smoke(x+40 + math.random()*10, y+40 + math.random()*10, 1, {r=0, g=255, b=255}))
 	end
 
 	-- check keyboard input
@@ -118,11 +138,10 @@ function Lvl2Hero:update(dt)
 
 	if not up and not down and not left and not right then
 		self.anim = self.stand_anim
-	else
-		if self.supermode then
-			local x, y, _, _ = self.world:getRect(self.body)
-			table.insert(self.stage, Lvl2Smoke(x+20 + math.random()*10, y+35 + math.random()*10, 1, {r=0, g=255, b=255}))
-		end
+	end
+
+	if self.supermode then
+		self.anim = self.swim_anim
 	end
 
 	-- compute displacement from keyboard input
@@ -138,10 +157,18 @@ function Lvl2Hero:update(dt)
 	if right then dx = 1 end
 	if left and right then dx = 0 end
 
+	if self.boost > 0 then
+		if up and not down then self.rotation = math.rad(-20) end
+		if not up and down then self.rotation = math.rad(20) end
+		if not up and not down then self.rotation = 0 end
+	else
+		self.rotation = 0
+	end
+
 	-- perform movement
 	local x, y, _, _ = self.world:getRect( self.body )
 	local aX, aY, cols, len = self.world:move( self.body,
-		x + dx * self.boost * self.speed.x * dt,
+		-dt * self.resistance + x + dx * self.boost * self.speed.x * dt,
 		y + dy * self.boost * self.speed.y * dt,
 		col_filter
 	)
