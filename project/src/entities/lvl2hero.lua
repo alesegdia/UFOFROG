@@ -3,11 +3,13 @@ local anim8 = require 'libs.anim8.anim8'
 local Class = require 'libs.hump.class'
 local inspect = require 'libs.inspect'
 local Timer = require "libs.hump.timer"
+local tween = Timer.tween
 
 local helper_anim8 = require 'src.helpers.anim8'
 local helper_boxedit = require 'src.helpers.boxedit'
 
 local Lvl2Smoke = require 'src.entities.lvl2smoke'
+local Lvl2Tiro = require 'src.entities.lvl2tiro'
 
 require 'src.helpers.proxy'
 
@@ -64,6 +66,21 @@ function Lvl2Hero:init(world, stage)
 
 	self.resistance = 200
 
+	self.nextShoot = 1
+
+	self.canShoot = false
+
+	self.cooldown = 1
+
+end
+
+function Lvl2Hero:giveSuperShoot()
+	self.cooldown = 0.02
+end
+
+function Lvl2Hero:giveShoot()
+	self.canShoot = true
+	tween(20, self, { cooldown = 0.1 })
 end
 
 function Lvl2Hero:superMode()
@@ -175,11 +192,28 @@ function Lvl2Hero:update(dt)
 	newx = -dt * self.resistance + x + dx * self.boost * self.speed.x * dt
 	newy = y + dy * self.boost * self.speed.y * dt
 
+
 	if newx < -30 then newx = -30 end
+	if newx > 800 then newx = 800 end
+
+	if newy < -30 then newy = -30 end
+	if newy > 580 then newy = 580 end
 
 	local aX, aY, cols, len = self.world:move( self.body, newx, newy, col_filter )
 
 	self.anim:update(dt * self.boost)
+
+	if self.nextShoot >= 0 then
+		self.nextShoot = self.nextShoot - dt
+	end
+
+	local letShoot = self.nextShoot < 0
+
+	if love.keyboard.isDown(" ") and self.canShoot and letShoot then
+		self.nextShoot = self.cooldown
+		local range = math.random(-10,10)
+		table.insert(self.stage, Lvl2Tiro(self.world, aX+40, aY+40, math.rad(90 + range) - self.rotation))
+	end
 
 end
 
