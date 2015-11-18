@@ -62,7 +62,7 @@ function Lvl2Hero:init(world, stage)
 	self.tw = Image.lvl2hero:getWidth() / 2
 	self.th = Image.lvl2hero:getHeight() / 3
 
-	self.resistance = 300
+	self.resistance = 200
 
 end
 
@@ -82,6 +82,10 @@ function Lvl2Hero:draw()
 	local x, y, w, h = self.world:getRect( self.body )
 	--love.graphics.rectangle("line", x, y, w, h)
 	self.anim:draw(Image.lvl2hero, x+self.tw/2, y+self.th/2, self.rotation, 1, 1, self.tw/2, self.th/2)
+end
+
+function Lvl2Hero:hasTurbo()
+	return self.supermode
 end
 
 -- IF COLLIDE WITH TURTLE, RESISTANCE BOOST WHILE COLLIDING
@@ -167,11 +171,13 @@ function Lvl2Hero:update(dt)
 
 	-- perform movement
 	local x, y, _, _ = self.world:getRect( self.body )
-	local aX, aY, cols, len = self.world:move( self.body,
-		-dt * self.resistance + x + dx * self.boost * self.speed.x * dt,
-		y + dy * self.boost * self.speed.y * dt,
-		col_filter
-	)
+	local newx, newy
+	newx = -dt * self.resistance + x + dx * self.boost * self.speed.x * dt
+	newy = y + dy * self.boost * self.speed.y * dt
+
+	if newx < -30 then newx = -30 end
+
+	local aX, aY, cols, len = self.world:move( self.body, newx, newy, col_filter )
 
 	self.anim:update(dt * self.boost)
 

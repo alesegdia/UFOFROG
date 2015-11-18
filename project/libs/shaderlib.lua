@@ -30,6 +30,38 @@ shadercombo = [[
 	]]
 
 
+shader_stage2 = [[
+		extern number time;
+		extern number angle;
+		extern number speed;
+		vec4 effect( vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords )
+		{
+			float factime = 0.01;
+			number pixelfact = 10;
+			number realangle = angle + 0;
+			number realtime = time * factime;
+			number xnew = time*100*speed + screen_coords.x * cos(realangle) + screen_coords.y * sin(realangle);
+			number ynew = 0;
+			number p = (floor(xnew/pixelfact + 0.5)*pixelfact) / 100;
+			number q = (floor(ynew/pixelfact + 0.5)*pixelfact);
+			vec3 psych_effect = vec3(
+				1.5 + sin( p + realtime ),
+				2 + sin( p + realtime ),
+				1 + sin( p + realtime)
+			) * vec3(q+150)/600 * vec3((1.0+sin(time*factime))/2.0, abs(cos(time*factime*3)), abs(sin(factime*time*2)));
+			vec4 ret = vec4( psych_effect, 1 );
+			if( ret.g > ret.b ) {
+				number tmpg = ret.g;
+				ret.g = ret.b;
+				ret.b = tmpg;
+			}
+			ret.r = 0;
+			return ret;
+		}
+	]]
+
+
+
 
 shaderwave = [[
 	extern number time;

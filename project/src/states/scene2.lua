@@ -13,12 +13,32 @@ local Lvl2Turtle = require 'src.entities.lvl2turtle'
 
 scene2 = {}
 
+local font = love.graphics.newFont("thin_pixel-7.ttf", 50)
+font:setFilter("nearest", "nearest", 0)
+
+local font2 = love.graphics.newFont("thin_pixel-7.ttf", 120)
+font2:setFilter("nearest", "nearest", 0)
+
 local entities = {}
 local world
 local cam 		= cam.new(0,0,1,0)
-local shader_bg
+local shader_bg, shader_epi
 local shader_timer = 0
 local shake_current = 0
+local hero
+
+local notifiers = {}
+
+local createNotifier = function(text_, launch, duration_ )
+	Timer.after(launch, function()
+		table.insert(notifiers, { text = text_, duration = duration_  })
+	end)
+end
+
+local clearNotifier = function(dt)
+	map(function(element) element.duration = element.duration - dt, print(element.duration) end, notifiers)
+	notifiers = filter(function(element) return element.duration > 0 end, notifiers)
+end
 
 local center = {
 	x = love.graphics.getWidth() / 2,
@@ -63,18 +83,27 @@ local drawGroup = function(tbl, dt)
 	end
 end
 
+local epilepsy = false
+
 function scene2:enter()
-	shader_bg = love.graphics.newShader( shadercombo )
+	shader_bg = love.graphics.newShader( shader_stage2 )
+	shader_epi = love.graphics.newShader( shaderepi_effect )
 	world = bump.newWorld( 120 )
 	--table.insert(entities, Lvl2Boss( world ))
-	local hero = Lvl2Hero( world, entities )
-	Timer.after(5, function()
+	hero = Lvl2Hero( world, entities )
+	Timer.after(20, function()
+		epilepsy = true
+		Timer.after(1, function() epilepsy = false end)
 		hero:superMode()
 	end)
 	table.insert(entities, hero)
-	Timer.every(1, function()
-		spawnTurtle()
+	Timer.after(10, function()
+		Timer.every(1, function()
+			spawnTurtle()
+		end)
 	end)
+	createNotifier("zxzxzxzximmm", 1, 4)
+	createNotifier("SUPER FROG MODE", 20, 4)
 end
 
 function scene2:update(dt)
@@ -83,6 +112,8 @@ function scene2:update(dt)
 	clearGroup(entities)
 
 	Timer.update(dt)
+
+	clearNotifier(dt)
 
 	-- update shader timer
 	shader_timer = shader_timer + dt * 10
@@ -101,17 +132,37 @@ function scene2:update(dt)
 	-- rotacion para la psicodelia
 	local shader_pixel_rotation = -0.1*math.sin(5+shader_timer/10)
 
+	local shader_speed = 1
+	if hero:hasTurbo() then
+		shader_speed = 2
+	end
+
 	shader_bg:send( "time", 	shader_timer )
-	shader_bg:send( "factor",	shader_shake_current )
 	shader_bg:send( "angle", 	shader_pixel_rotation )
+	shader_bg:send( "speed", 	shader_speed )
+	shader_epi:send( "time", 	shader_timer )
+
+	if not epilepsy then
+	end
 
 end
 
 function scene2:draw()
 
+	local realx = center.x + math.random() * 0
+	local realy = center.y + math.random() * 10
+
+	if hero:hasTurbo() then
+		cam:lookAt(realx, realy)
+	end
+
 	-- render background
 	cam:attach()
-		love.graphics.setShader(shader_bg)
+		if epilepsy == false then
+			love.graphics.setShader(shader_bg)
+		else
+			love.graphics.setShader(shader_epi)
+		end
 		love.graphics.rectangle("fill", -100, -100, center.x*2 + 200, center.y*2 + 200 )
 		love.graphics.setShader()
 	cam:detach()
@@ -119,6 +170,12 @@ function scene2:draw()
 	-- render stage
 	cam:attach()
 		drawGroup(entities)
+		for k,v in pairs(notifiers) do
+			love.graphics.setColor(255, 0, 200, 255)
+			love.graphics.setFont(font2)
+			love.graphics.printf( v.text, center.x, center.y, 200, "center")
+			love.graphics.setColor(255, 255, 255, 255)
+		end
 	cam:detach()
 end
 
