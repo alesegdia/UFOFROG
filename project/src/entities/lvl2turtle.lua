@@ -41,7 +41,7 @@ function Lvl2Turtle:init(world, stage)
 	local that = self
 	self.timerHandle = Timer.every(0.01, function()
 		local x, y, _, _ = that.world:getRect(that.body)
-		table.insert(that.stage, Lvl2Smoke(x+140, y+70 + math.random(-10, 10), that.scaling))
+		table.insert(that.stage, Lvl2Smoke(x+140, y+70 + math.random(-10, 10), that.scaling, {r=255, g=255, b=255}, 0.5))
 	end)
 
 end
