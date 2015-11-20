@@ -60,7 +60,7 @@ local _bump = {
 			end,
 
 			data = provider:eachFrameBox( index, function( box )
-				local handler = {}
+				local handler = { x = box.data[1], y = box.data[2], isBossBox = true }
 				world:add( handler, unpack(box.data) )
 				return handler
 			end ),
