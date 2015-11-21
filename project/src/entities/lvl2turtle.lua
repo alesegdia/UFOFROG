@@ -28,7 +28,7 @@ function Lvl2Turtle:init(world, stage)
 	local drtn = 0.5
 	self.anim = anim8.newAnimation( g(1,1, 2,1, 3,1, 4,1, 5,1), {0.05, 0.05, 0.05, 0.05, 0.05} )
 
-	self.body = { isEnemy = true, isTurtle = true }
+	self.body = { isEnemy = true, isTurtle = true, entity = self }
 	world:add(self.body, 1000, love.math.random(0, 400), Image.lvl2turtle:getWidth() / 5, Image.lvl2turtle:getHeight() / 1)
 
 	self.isDead = false
@@ -38,10 +38,9 @@ function Lvl2Turtle:init(world, stage)
 	self.scaling = 1
 	self.timer = 0
 
-	local that = self
 	self.timerHandle = Timer.every(0.01, function()
-		local x, y, _, _ = that.world:getRect(that.body)
-		table.insert(that.stage, Lvl2Smoke(x+140, y+70 + math.random(-10, 10), that.scaling, {r=255, g=255, b=255}, 0.5))
+		local x, y, _, _ = self.world:getRect(self.body)
+		table.insert(self.stage, Lvl2Smoke(x+140, y+70 + math.random(-10, 10), self.scaling, {r=255, g=255, b=255}, 1.2))
 	end)
 
 end
@@ -63,6 +62,21 @@ function Lvl2Turtle:die()
 	Timer.cancel(self.timerHandle)
 end
 
+function Lvl2Turtle:explode()
+
+	local x = self.x
+	local y = self.y
+
+	Timer.cancel(self.timerHandle)
+	Timer.after(0, function()
+		table.insert(self.stage, Lvl2Explosion(x + 40 + math.random(10,20), y+40 + math.random(1,10), 0.75))
+	end)
+	Timer.after(0.2, function()
+		table.insert(self.stage, Lvl2Explosion(x + 40, y + 40, 1))
+	end)
+	self.isDead = true
+end
+
 function Lvl2Turtle:update(dt)
 
 	local x, y, _, _ = self.world:getRect(self.body)
@@ -79,6 +93,9 @@ function Lvl2Turtle:update(dt)
 
 	local aX, aY, cols, len = self.world:move(self.body, x - dt * self.speed, y, col_filter)
 
+	self.x = aX
+	self.y = aY
+
 	if x < -400 then
 		self.isDead = true
 	end
@@ -87,13 +104,7 @@ function Lvl2Turtle:update(dt)
 		local col = cols[i]
 		if col.other.isBullet then
 			self.isDead = true
-			Timer.cancel(self.timerHandle)
-			Timer.after(0, function()
-				table.insert(self.stage, Lvl2Explosion(aX + 40 + math.random(10,20), aY+40 + math.random(1,10), 0.75))
-			end)
-			Timer.after(0.2, function()
-				table.insert(self.stage, Lvl2Explosion(aX + 40, aY + 40, 1))
-			end)
+			self:explode()
 		end
 	end
 
