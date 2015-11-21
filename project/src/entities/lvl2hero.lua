@@ -39,13 +39,12 @@ function Lvl2Hero:init(world, stage)
 	self.speed = { x = 75, y = 50 }
 
 	self.body = { isPlayer = true }
-	world:add(self.body, 600, 300, Image.lvl2hero:getWidth() / 2, Image.lvl2hero:getHeight() / 3)
+	world:add(self.body, 600, 300, 90, 40) --Image.lvl2hero:getHeight() / 3)
 
-	local that = self
 	self.swim_anim:assignFrameStart(1, function()
 		if not self.supermode then
 		if self.boost > 0 then
-			local x, y, _, _ = that.world:getRect(that.body)
+			local x, y, _, _ = self.world:getRect(self.body)
 			table.insert(self.stage, Lvl2Smoke(x+20, y+20, 0.8, {r=0, g=255, b=255}))
 		end
 		end
@@ -54,7 +53,7 @@ function Lvl2Hero:init(world, stage)
 	self.swim_anim:assignFrameStart(3, function()
 		if not self.supermode then
 		if self.boost > 0 then
-			local x, y, _, _ = that.world:getRect(that.body)
+			local x, y, _, _ = self.world:getRect(self.body)
 			table.insert(self.stage, Lvl2Smoke(x+15, y+40, 0.8, {r=0, g=255, b=255}))
 		end
 		end
@@ -72,15 +71,22 @@ function Lvl2Hero:init(world, stage)
 
 	self.cooldown = 1
 
+	self.shieldRechargeDelay = 2
+	self.nextShield = self.shieldRechargeDelay
+	self.shield = 5
+	self.health = 3
+	self.raybar = 0
+
+	self.yoffset = 30
 end
 
 function Lvl2Hero:giveSuperShoot()
 	self.cooldown = 0.02
 end
 
-function Lvl2Hero:giveShoot()
+function Lvl2Hero:giveShoot(learning_time)
 	self.canShoot = true
-	tween(20, self, { cooldown = 0.1 })
+	tween(learning_time, self, { cooldown = 0.2 })
 end
 
 function Lvl2Hero:superMode()
@@ -91,14 +97,15 @@ function Lvl2Hero:superMode()
 		local x, y, _, _ = self.world:getRect(self.body)
 		--table.insert(self.stage, Lvl2Smoke(x+40 + math.random()*10, y+40 + math.random()*10, 1, {r=0, g=255, b=255}))
 		--table.insert(self.stage, Lvl2Smoke(x+50 + math.random()*10, y+40 + math.random()*10, 2.5, {r=0, g=255, b=255}, 2))
-		table.insert(self.stage, Lvl2Smoke(x+30 + math.random()*10, y+40 + math.random()*10, 2, {r=0, g=255, b=255}, 2))
+		table.insert(self.stage, Lvl2Smoke(x+30 + math.random()*10, y+40 + math.random()*10 - self.yoffset, 2, {r=0, g=255, b=255}, 2))
 	end)
 end
 
 function Lvl2Hero:draw()
 	local x, y, w, h = self.world:getRect( self.body )
 	--love.graphics.rectangle("line", x, y, w, h)
-	self.anim:draw(Image.lvl2hero, x+self.tw/2, y+self.th/2, self.rotation, 1, 1, self.tw/2, self.th/2)
+	self.anim:draw(Image.lvl2hero, x+self.tw/2, y+self.th/2 - self.yoffset, self.rotation, 1, 1, self.tw/2, self.th/2)
+	--love.graphics.draw(Image.lvl2ray, x+self.tw, y)
 end
 
 function Lvl2Hero:hasTurbo()
@@ -111,6 +118,27 @@ local col_filter = function(item, other)
 		return "cross"
 	end
 	if other.isBoss and other.isActive == true then return "cross" end
+end
+
+function Lvl2Hero:die()
+
+end
+
+function Lvl2Hero:dealtDamage()
+	if self.shield > 0 then
+		self.shield = self.shield - 1
+	else
+		self.health = self.health - 1
+		if self.health <= 0 then
+			self.isDead = true
+		end
+	end
+end
+
+function Lvl2Hero:incRayBoost()
+	if self.raybar < 500 then
+		self.raybar = self.raybar + 10
+	end
 end
 
 function Lvl2Hero:update(dt)
@@ -201,6 +229,15 @@ function Lvl2Hero:update(dt)
 
 	local aX, aY, cols, len = self.world:move( self.body, newx, newy, col_filter )
 
+	for i=1,len do
+		local col = cols[i]
+		if col.other.isBaba then
+			self:dealtDamage()
+			col.other.entity.isDead = true
+			col.other.entity:explode()
+		end
+	end
+
 	self.anim:update(dt * self.boost)
 
 	if self.nextShoot >= 0 then
@@ -212,9 +249,22 @@ function Lvl2Hero:update(dt)
 	if love.keyboard.isDown(" ") and self.canShoot and letShoot then
 		self.nextShoot = self.cooldown
 		local range = math.random(-10,10)
-		table.insert(self.stage, Lvl2Tiro(self.world, aX+40, aY+40, math.rad(90 + range) - self.rotation))
+		table.insert(self.stage, Lvl2Tiro(self.world, self.stage, aX+40, aY+40 - self.yoffset, math.rad(90 + range) - self.rotation,
+			function()
+				self:incRayBoost()
+			end
+		))
 	end
 
+	if self.shield < 5 then
+		self.nextShield = self.nextShield - dt
+		if self.nextShield <= 0 then
+			self.shield = self.shield + 1
+			if self.nextShield < 5 then
+				self.nextShield = self.shieldRechargeDelay
+			end
+		end
+	end
 end
 
 return Lvl2Hero
