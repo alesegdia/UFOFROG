@@ -3,6 +3,7 @@ local Class = require 'libs.hump.class'
 local inspect = require 'libs.inspect'
 
 local Lvl2Smoke = require 'src.entities.lvl2smoke'
+local Lvl2Explosion = require 'src.entities.lvl2explosion'
 
 local Timer = require "libs.hump.timer"
 local tween = Timer.tween
@@ -12,9 +13,10 @@ require 'src.helpers.proxy'
 local Lvl2Tiro = Class {
 }
 
-function Lvl2Tiro:init(world, x, y, rotation)
+function Lvl2Tiro:init(world, stage, x, y, rotation, onDie)
 
 	self.world = world
+	self.stage = stage
 
 	self.rotation = rotation
 
@@ -27,6 +29,8 @@ function Lvl2Tiro:init(world, x, y, rotation)
 	self.isDead = false
 	self.speed = 750
 
+	self.onDie = onDie
+
 end
 
 function Lvl2Tiro:draw()
@@ -35,6 +39,7 @@ function Lvl2Tiro:draw()
 end
 
 local col_filter = function(item, other)
+	if other.isBoss and not other.isActive then return nil end
 	return "cross"
 end
 
@@ -48,8 +53,13 @@ function Lvl2Tiro:update(dt)
 
 	for i=1,len do
 		local col = cols[i]
-		if col.other.isTurtle then
+		if col.other.isTurtle or col.other.isEnemy then
+			col.other.entity:explode()
 			self.isDead = true
+			self.onDie()
+		elseif col.other.isBossBox then
+			self.isDead = true
+			table.insert(self.stage, Lvl2Explosion(aX, aY, 0.5))
 		end
 	end
 
