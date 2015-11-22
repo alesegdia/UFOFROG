@@ -1,5 +1,5 @@
 local anim8 = {
-  _VERSION     = 'anim8 v2.1.0',
+  _VERSION     = 'anim8 v2.2.0',
   _DESCRIPTION = 'An animation library for LÖVE',
   _URL         = 'https://github.com/kikito/anim8',
   _LICENSE     = [[
@@ -224,11 +224,19 @@ local function seekFrameIndex(intervals, timer)
   return i
 end
 
+function Animation:reset()
+	self.timer = 0
+end
+
 function Animation:assignFrameStart(keyframe, delegate)
 	self.onFrameStart[keyframe] = delegate
 end
 
 function Animation:update(dt)
+	if self.timer == 0 and self.onFrameStart[1] ~= nil then
+		self.onFrameStart[1](self)
+	end
+
   if self.status ~= "playing" then return end
 
   self.timer = self.timer + dt
@@ -287,6 +295,11 @@ function Animation:draw(image, x, y, r, sx, sy, ox, oy, ...)
     end
   end
   love.graphics.draw(image, frame, x, y, r, sx, sy, ox, oy, ...)
+end
+
+function Animation:getDimensions()
+  local _,_,w,h = self.frames[self.position]:getViewport()
+  return w,h
 end
 
 -----------------------------------------------------------
