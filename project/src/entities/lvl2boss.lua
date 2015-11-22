@@ -77,24 +77,30 @@ function Lvl2Boss:init(world)
 	self.states = {
 		wandering = {
 			timerhandle = {},
+			hasFinished = false,
 			enter = function(self)
-				self.timerhandle = tween(1, theboss, {y = -70}, 'in-out-circ', function()
-					self.timerhandle = tween(1, theboss, {y = 150}, 'in-out-circ', function()
-						theboss:changeState(theboss.states.wandering)
+				self.hasFinished = false
+				local that = self
+				self.timerhandle = tween(1, theboss, {y = -70, x = 430}, 'in-out-circ', function()
+					self.timerhandle = tween(1, theboss, {y = 150, x = 430}, 'in-out-circ', function()
+						that.hasFinished = true
 					end)
 				end)
 			end,
 			leave = function(self)
 				Timer.cancel(self.timerhandle)
-			end
+			end,
 		},
 		arriving = {
 			timerhandle = {},
+			hasFinished = false,
 			enter = function(self)
+				self.hasFinished = false
 				self.x = 800
 				self.y = 0
-				self.timerhandle = tween(5, theboss, {x = 430}, "out-back", function()
-					theboss:changeState(theboss.states.wandering)
+				local that = self
+				self.timerhandle = tween(5, theboss, {x = 430, y = 0}, "out-back", function()
+					that.hasFinished = true
 				end)
 			end,
 			leave = function(self)
@@ -104,10 +110,23 @@ function Lvl2Boss:init(world)
 
 	}
 
+	self.behaviour_cycle = {self.states.arriving, self.states.wandering, self.states.wandering, self.states.wandering}
+
+	local that = self
+	self.co = coroutine.create(function()
+		while true do
+			for k,v in pairs(that.behaviour_cycle) do
+				that:changeState(v)
+				coroutine.yield()
+				while not v.hasFinished do
+					coroutine.yield()
+				end
+			end
+		end
+	end)
 
 	self.currentState = self.states.arriving
 	self:changeState(self.states.arriving)
-
 end
 
 function Lvl2Boss:changeState(newState)
@@ -136,6 +155,7 @@ local col_filter = function(item, other)
 end
 
 function Lvl2Boss:update(dt)
+	coroutine.resume(self.co)
 	self.anim:update(dt)
 	self.currentBodyData:each( function( element )
 		local aX, aY = self.world:getRect(element)
