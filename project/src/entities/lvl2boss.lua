@@ -33,15 +33,15 @@ function Lvl2Boss:loadBodies(num)
 	return bodies
 end
 
-function Lvl2Boss:configBodiesForAnim()
-	for k,v in pairs(self.bodies) do
-		self.anim:assignFrameStart(k, function(anim)
-			for k2,v2 in pairs(self.bodies) do
-				if k2 == k then
-					v2:activate()
-					self.currentBodyData = v2
+function Lvl2Boss:configBodiesForAnim(anim, bodies)
+	for anim_frame,associated_body in pairs(bodies) do
+		anim:assignFrameStart(anim_frame, function(animation)
+			for k,v in pairs(self.bodies) do
+				if k == associated_body then
+					v:activate()
+					self.currentBodyData = v
 				else
-					v2:deactivate()
+					v:deactivate()
 				end
 			end
 		end)
@@ -66,9 +66,12 @@ function Lvl2Boss:init(world)
 	local g = helper_anim8.newGrid(Image.lvl2boss_nocolor, 2, 4)
 	local dtn = 1
 	--self.anim = anim8.newAnimation( g(1,1, 1,2, 2,2), {2, 0.1, 5.0} )
-	self.anim = anim8.newAnimation( g(1,1, 2,1), {0.4, 0.4} )
+	self.standanim = anim8.newAnimation( g(1,1, 2,1), {0.4, 0.4} )
+	self.throwanim = anim8.newAnimation( g(2,2), { 1 } )
+	self.anim = self.standanim
 
-	self:configBodiesForAnim()
+	self:configBodiesForAnim(self.standanim, {1, 2})
+	self:configBodiesForAnim(self.throwanim, {4})
 
 	self.currentBodyData = self.bodies[1]
 
@@ -79,6 +82,7 @@ function Lvl2Boss:init(world)
 			timerhandle = {},
 			hasFinished = false,
 			enter = function(self)
+				theboss.anim = theboss.standanim
 				self.hasFinished = false
 				local that = self
 				self.timerhandle = tween(1, theboss, {y = -70, x = 430}, 'in-out-circ', function()
@@ -95,9 +99,11 @@ function Lvl2Boss:init(world)
 			timerhandle = {},
 			hasFinished = false,
 			enter = function(self)
+				theboss.anim = theboss.standanim
+				theboss.standanim:reset()
 				self.hasFinished = false
-				self.x = 800
-				self.y = 0
+				theboss.x = 800
+				theboss.y = 100
 				local that = self
 				self.timerhandle = tween(5, theboss, {x = 430, y = 0}, "out-back", function()
 					that.hasFinished = true
@@ -108,9 +114,57 @@ function Lvl2Boss:init(world)
 			end
 		},
 
+		pushing = {
+			timerhandle = {},
+			hasFinished = false,
+			enter = function(self)
+				theboss.throwanim:reset()
+				theboss.anim = theboss.throwanim
+				self.hasFinished = false
+				local that = self
+				local ypos = math.random(0, 350)
+				theboss.y = ypos
+				self.timerhandle = tween(1, theboss, {x = -1500, y = ypos}, "linear", function()
+					local newypos = math.random(0,350)
+					theboss.y = newypos
+					theboss.flip = true
+					self.timerhandle = tween(1, theboss, {x = 800, y = newypos}, "linear", function()
+						that.hasFinished = true
+						theboss.flip = false
+					end)
+				end)
+			end,
+			leave = function(self)
+				Timer.cancel(self.timerhandle)
+			end
+		},
+
+		hiding = {
+			timerhandle = {},
+			hasFinished = false,
+			enter = function(self)
+				theboss.standanim:reset()
+				theboss.anim = theboss.standanim
+				self.hasFinished = false
+				local that = self
+				self.timerhandle = tween(2, theboss, {x = 800, y = 0}, "linear", function()
+					that.hasFinished = true
+				end)
+			end,
+			leave = function(self)
+				Timer.cancel(self.timerhandle)
+			end
+		}
+
 	}
 
-	self.behaviour_cycle = {self.states.arriving, self.states.wandering, self.states.wandering, self.states.wandering}
+	self.behaviour_cycle = {
+		self.states.arriving,
+		self.states.wandering,
+		self.states.wandering,
+		self.states.wandering,
+		self.states.hiding,
+		self.states.pushing}
 
 	local that = self
 	self.co = coroutine.create(function()
