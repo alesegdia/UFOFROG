@@ -199,7 +199,12 @@ function Lvl2Boss:draw()
 		love.graphics.rectangle("line", x, y, w, h)
 	end
 	--love.graphics.setColor(255, 255, 0, 255)
-	self.anim:draw(Image.lvl2boss, self.x, self.y)
+	if self.flip then
+		local anx, any = self.anim:getDimensions()
+		self.anim:draw(Image.lvl2boss, self.x + anx, self.y, 0, -1, 1)
+	else
+		self.anim:draw(Image.lvl2boss, self.x, self.y)
+	end
 	--love.graphics.setColor(255, 255, 255, 255)
 end
 
@@ -213,8 +218,14 @@ function Lvl2Boss:update(dt)
 	self.anim:update(dt)
 	self.currentBodyData:each( function( element )
 		local aX, aY = self.world:getRect(element)
-		local newx = element.x + self.x
-		local newy = element.y + self.y
+		local newx, newy
+		newy = element.y + self.y
+		if self.flip then
+			local animx, _ = self.anim:getDimensions()
+			newx = self.x + animx - element.x
+		else
+			newx = element.x + self.x
+		end
 		self.world:move(element, newx, newy, col_filter)
 	end )
 end
