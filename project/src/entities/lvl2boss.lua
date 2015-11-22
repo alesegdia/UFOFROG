@@ -63,7 +63,7 @@ function Lvl2Boss:init(world)
 	self:forAllBodies(function(element) element.isBoss = true end)
 
 	-- animation loading
-	local g = helper_anim8.newGrid(Image.lvl2boss_nocolor, 2, 4)
+	local g = helper_anim8.newGrid(Image.lvl2boss, 2, 4)
 	local dtn = 1
 	--self.anim = anim8.newAnimation( g(1,1, 1,2, 2,2), {2, 0.1, 5.0} )
 	self.standanim = anim8.newAnimation( g(1,1, 2,1), {0.4, 0.4} )
@@ -199,7 +199,7 @@ function Lvl2Boss:draw()
 		love.graphics.rectangle("line", x, y, w, h)
 	end
 	--love.graphics.setColor(255, 255, 0, 255)
-	self.anim:draw(Image.lvl2boss_nocolor, self.x, self.y)
+	self.anim:draw(Image.lvl2boss, self.x, self.y)
 	--love.graphics.setColor(255, 255, 255, 255)
 end
 
