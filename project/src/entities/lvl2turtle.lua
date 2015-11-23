@@ -43,6 +43,8 @@ function Lvl2Turtle:init(world, stage)
 		table.insert(self.stage, Lvl2Smoke(x+140, y+70 + math.random(-10, 10), self.scaling, {r=255, g=255, b=255}, 1.2))
 	end)
 
+	self.x, self.y = 0, 0
+
 end
 
 function Lvl2Turtle:draw()
