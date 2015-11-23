@@ -17,7 +17,10 @@ require 'src.helpers.proxy'
 local Lvl2Enemy = Class {
 }
 
-function Lvl2Enemy:init(world, stage)
+function Lvl2Enemy:init(world, stage, spawnMin, spawnMax)
+
+	self.spawnMin = spawnMin or 0
+	self.spawnMax = spawnMax or 400
 
 	self.world = world
 	self.stage = stage
@@ -29,7 +32,7 @@ function Lvl2Enemy:init(world, stage)
 	self.anim = anim8.newAnimation( g(1,1, 2,1), {0.3, 0.1} )
 
 	self.body = { isEnemy = true, entity = self, isBaba = true }
-	world:add(self.body, 1200, love.math.random(0, 400), Image.lvl2enemy:getWidth() / 2, Image.lvl2enemy:getHeight() / 1)
+	world:add(self.body, 1200, love.math.random(self.spawnMin, self.spawnMax), Image.lvl2enemy:getWidth() / 2, Image.lvl2enemy:getHeight() / 1)
 
 	self.isDead = false
 	self.speed = 0
