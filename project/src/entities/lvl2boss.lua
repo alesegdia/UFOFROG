@@ -67,7 +67,7 @@ function Lvl2Boss:init(world, stage)
 	self.stage = stage
 	print(self.stage)
 
-	self.x = 800
+	self.timerhandle = {}
 
 	self.x = 800
 	self.y = 0
