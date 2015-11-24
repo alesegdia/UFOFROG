@@ -10,6 +10,7 @@ local helper_boxedit = require 'src.helpers.boxedit'
 
 local Lvl2Smoke = require 'src.entities.lvl2smoke'
 local Lvl2Tiro = require 'src.entities.lvl2tiro'
+local Lvl2Ray = require 'src.entities.lvl2ray'
 
 require 'src.helpers.proxy'
 
@@ -37,6 +38,9 @@ function Lvl2Hero:init(world, stage)
 	self.boost = 0
 	self.lastpress = "z"
 	self.speed = { x = 75, y = 50 }
+
+	self.ray = Lvl2Ray(self.world)
+	table.insert(self.stage, self.ray)
 
 	self.body = { isPlayer = true }
 	world:add(self.body, 600, 300, 90, 40) --Image.lvl2hero:getHeight() / 3)
@@ -228,6 +232,9 @@ function Lvl2Hero:update(dt)
 	if newy > 580 then newy = 580 end
 
 	local aX, aY, cols, len = self.world:move( self.body, newx, newy, col_filter )
+
+	self.ray.x = aX + 80
+	self.ray.y = aY - 6
 
 	for i=1,len do
 		local col = cols[i]
