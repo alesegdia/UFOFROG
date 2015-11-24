@@ -9,6 +9,8 @@ local tween = Timer.tween
 local helper_anim8 = require 'src.helpers.anim8'
 local helper_boxedit = require 'src.helpers.boxedit'
 
+local Lvl2Enemy = require 'src.entities.lvl2enemy'
+
 require 'src.helpers.proxy'
 
 local Lvl2Boss = Class {
@@ -48,12 +50,26 @@ function Lvl2Boss:configBodiesForAnim(anim, bodies)
 	end
 end
 
-function Lvl2Boss:init(world)
+function Lvl2Boss:configSpawn(new_rate, spawnMin, spawnMax)
+	Timer.cancel(self.timerhandle)
+	if new_rate > 0 then
+		print("SETUP!")
+		self.timerhandle = Timer.every(new_rate, function()
+			table.insert(self.stage, Lvl2Enemy(self.world, self.stage, spawnMin, spawnMax))
+			print(new_rate)
+		end)
+	end
+end
+
+function Lvl2Boss:init(world, stage)
 
 	self.world = world
+	self.stage = stage
+	print(self.stage)
 
 	self.x = 800
 
+	self.x = 800
 	self.y = 0
 
 	-- physic definition loading
@@ -99,6 +115,7 @@ function Lvl2Boss:init(world)
 			timerhandle = {},
 			hasFinished = false,
 			enter = function(self)
+				theboss:configSpawn(0)
 				theboss.anim = theboss.standanim
 				theboss.standanim:reset()
 				self.hasFinished = false
@@ -119,6 +136,7 @@ function Lvl2Boss:init(world)
 			hasFinished = false,
 			enter = function(self)
 				theboss.throwanim:reset()
+				theboss:configSpawn(0.05, 0, 400)
 				theboss.anim = theboss.throwanim
 				self.hasFinished = false
 				local that = self
