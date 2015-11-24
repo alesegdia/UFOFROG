@@ -215,7 +215,7 @@ end
 function Lvl2Boss:draw()
 	for k,v in pairs(self.currentBodyData.data) do
 		local x, y, w, h = self.world:getRect(v)
-		love.graphics.rectangle("line", x, y, w, h)
+		--love.graphics.rectangle("line", x, y, w, h)
 	end
 	--love.graphics.setColor(255, 255, 0, 255)
 	if self.flip then
