@@ -160,7 +160,7 @@ function scene2:enter()
 	end)
 
 	newEvent("OH SHIT THAT'S WHY", t8, 1, function()
-		table.insert(entities, Lvl2Boss( world ))
+		table.insert(entities, Lvl2Boss( world, entities ))
 	end)
 
 	self.timer = 0
