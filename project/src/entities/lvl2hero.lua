@@ -35,12 +35,16 @@ function Lvl2Hero:init(world, stage)
 
 	self.stand_anim = anim8.newAnimation( g(1,1), {1} )
 
+	self.rayanim = anim8.newAnimation( g(1,3), {1} )
+
 	self.boost = 0
 	self.lastpress = "z"
 	self.speed = { x = 75, y = 50 }
 
 	self.ray = Lvl2Ray(self.world)
 	table.insert(self.stage, self.ray)
+
+	self:activateRay()
 
 	self.body = { isPlayer = true }
 	world:add(self.body, 600, 300, 90, 40) --Image.lvl2hero:getHeight() / 3)
@@ -82,6 +86,16 @@ function Lvl2Hero:init(world, stage)
 	self.raybar = 0
 
 	self.yoffset = 30
+end
+
+function Lvl2Hero:activateRay()
+	self.ray:activate()
+	self.anim = self.rayanim
+end
+
+function Lvl2Hero:deactivateRay()
+	self.ray:deactivate()
+	self.anim = self.swim_anim
 end
 
 function Lvl2Hero:giveSuperShoot()
@@ -164,19 +178,23 @@ function Lvl2Hero:update(dt)
 
 	-- animation depends on movement
 	local newanim
-	if self.boost == 0 then newanim = self.stand_anim
-	else newanim = self.swim_anim end
+	if self.anim ~= self.rayanim then
+		if self.boost == 0 then newanim = self.stand_anim
+		else newanim = self.swim_anim end
 
-	-- reset animation if changes
-	if newanim ~= self.anim then
-		newanim.timer = 0
+		-- reset animation if changes
+		if newanim ~= self.anim then
+			newanim.timer = 0
+		end
+
+		self.anim = newanim
 	end
 
-	self.anim = newanim
-
 	if self.supermode == true then
-		self.anim = self.swim_anim
-		self.boost = 8
+		if self.anim ~= self.rayanim then
+			self.anim = self.swim_anim
+		end
+			self.boost = 8
 
 		local x, y, _, _ = self.world:getRect(self.body)
 		--table.insert(self.stage, Lvl2Smoke(x+40 + math.random()*10, y+40 + math.random()*10, 1, {r=0, g=255, b=255}))
@@ -189,12 +207,14 @@ function Lvl2Hero:update(dt)
 	left = love.keyboard.isDown("left")
 	right = love.keyboard.isDown("right")
 
-	if not up and not down and not left and not right then
-		self.anim = self.stand_anim
-	end
+	if self.anim ~= self.rayanim then
+		if not up and not down and not left and not right then
+			self.anim = self.stand_anim
+		end
 
-	if self.supermode then
-		self.anim = self.swim_anim
+		if self.supermode then
+			self.anim = self.swim_anim
+		end
 	end
 
 	-- compute displacement from keyboard input
