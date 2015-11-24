@@ -53,10 +53,8 @@ end
 function Lvl2Boss:configSpawn(new_rate, spawnMin, spawnMax)
 	Timer.cancel(self.timerhandle)
 	if new_rate > 0 then
-		print("SETUP!")
 		self.timerhandle = Timer.every(new_rate, function()
 			table.insert(self.stage, Lvl2Enemy(self.world, self.stage, spawnMin, spawnMax))
-			print(new_rate)
 		end)
 	end
 end
