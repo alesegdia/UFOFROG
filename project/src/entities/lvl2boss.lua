@@ -92,6 +92,8 @@ function Lvl2Boss:init(world, stage)
 
 	self.currentBodyData = self.bodies[1]
 
+	self.danger = "no"
+
 	local theboss = self
 
 	self.states = {
@@ -132,7 +134,7 @@ function Lvl2Boss:init(world, stage)
 			end
 		},
 
-		pushing = {
+		pushleft = {
 			timerhandle = {},
 			hasFinished = false,
 			enter = function(self)
@@ -141,20 +143,67 @@ function Lvl2Boss:init(world, stage)
 				theboss.anim = theboss.throwanim
 				self.hasFinished = false
 				local that = self
-				local ypos = math.random(0, 350)
-				theboss.y = ypos
-				self.timerhandle = tween(1, theboss, {x = -1500, y = ypos}, "linear", function()
-					local newypos = math.random(0,350)
-					theboss.y = newypos
-					theboss.flip = true
-					self.timerhandle = tween(1, theboss, {x = 800, y = newypos}, "linear", function()
-						that.hasFinished = true
-						theboss.flip = false
-					end)
+				self.timerhandle = tween(1, theboss, {x = -1500, y = theboss.y}, "linear", function()
+					that.hasFinished = true
 				end)
 			end,
 			leave = function(self)
 				Timer.cancel(self.timerhandle)
+			end
+		},
+
+		pushright = {
+			timerhandle = {},
+			hasFinished = false,
+			enter = function(self)
+
+				theboss.throwanim:reset()
+				theboss.anim = theboss.throwanim
+				self.hasFinished = false
+				local that = self
+				theboss.flip = true
+				self.timerhandle = tween(1, theboss, {x = 800, y = theboss.y}, "linear", function()
+					that.hasFinished = true
+				end)
+
+			end,
+			leave = function(self)
+				Timer.cancel(self.timerhandle)
+				theboss.flip = false
+			end
+		},
+
+		dangerright = {
+			hasFinished = false,
+			enter = function(self)
+				theboss.danger = "right"
+				local that = self
+				self.hasFinished = false
+				local ypos = math.random(0, 350)
+				theboss.y = ypos
+				Timer.after(1, function()
+					that.hasFinished = true
+				end)
+			end,
+			leave = function(self)
+				theboss.danger = "no"
+			end
+		},
+
+		dangerleft = {
+			hasFinished = false,
+			enter = function(self)
+				theboss.danger = "left"
+				self.hasFinished = false
+				local that = self
+				local ypos = math.random(0, 350)
+				theboss.y = ypos
+				Timer.after(1, function()
+					that.hasFinished = true
+				end)
+			end,
+			leave = function(self)
+				theboss.danger = "no"
 			end
 		},
 
@@ -183,7 +232,11 @@ function Lvl2Boss:init(world, stage)
 		self.states.wandering,
 		self.states.wandering,
 		self.states.hiding,
-		self.states.pushing}
+		self.states.dangerright,
+		self.states.pushleft,
+		self.states.dangerleft,
+		self.states.pushright,
+	}
 
 	local that = self
 	self.co = coroutine.create(function()
@@ -217,6 +270,13 @@ function Lvl2Boss:draw()
 		local x, y, w, h = self.world:getRect(v)
 		--love.graphics.rectangle("line", x, y, w, h)
 	end
+
+	if self.danger == "left" then
+		self.dangeranim:draw(Image.lvl2danger, 0, self.y + 120)
+	elseif self.danger == "right" then
+		self.dangeranim:draw(Image.lvl2danger, 800 - Image.lvl2danger:getWidth(), self.y + 120)
+	end
+
 	--love.graphics.setColor(255, 255, 0, 255)
 	if self.flip then
 		local anx, any = self.anim:getDimensions()
