@@ -78,6 +78,9 @@ function Lvl2Boss:init(world, stage)
 	self.bodies = self:loadBodies(8)
 	self:forAllBodies(function(element) element.isBoss = true end)
 
+	local gdanger = helper_anim8.newGrid(Image.lvl2danger, 1, 2)
+	self.dangeranim = anim8.newAnimation( gdanger(1,1, 1,2), {0.1, 0.1} )
+
 	-- animation loading
 	local g = helper_anim8.newGrid(Image.lvl2boss, 2, 4)
 	local dtn = 1
@@ -234,6 +237,7 @@ end
 function Lvl2Boss:update(dt)
 	coroutine.resume(self.co)
 	self.anim:update(dt)
+	self.dangeranim:update(dt)
 	self.currentBodyData:each( function( element )
 		local aX, aY = self.world:getRect(element)
 		local newx, newy
