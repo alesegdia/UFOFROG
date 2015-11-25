@@ -88,6 +88,10 @@ function Lvl2Hero:init(world, stage)
 	self.raybar = 0
 
 	self.yoffset = 30
+
+	self.invencible = false
+
+	self.timer = 0
 end
 
 function Lvl2Hero:activateRay()
@@ -149,12 +153,16 @@ function Lvl2Hero:die()
 end
 
 function Lvl2Hero:dealtDamage()
-	if self.shield > 0 then
-		self.shield = self.shield - 1
-	else
-		self.health = self.health - 1
-		if self.health <= 0 then
-			self.isDead = true
+	if not self.invencible then
+		if self.shield > 0 then
+			self.shield = self.shield - 1
+		else
+			self.health = self.health - 1
+			if self.health <= 0 then
+				self.isDead = true
+			end
+			self.invencible = true
+			Timer.after(2, function() self.invencible = false end)
 		end
 	end
 end
@@ -265,7 +273,9 @@ function Lvl2Hero:update(dt)
 	for i=1,len do
 		local col = cols[i]
 		if col.other.isBaba then
-			self:dealtDamage()
+			if not self:isRayActive() then
+				self:dealtDamage()
+			end
 			col.other.entity.isDead = true
 			col.other.entity:explode()
 		end
@@ -292,7 +302,7 @@ function Lvl2Hero:update(dt)
 		))
 	end
 
-	if self.shield < 5 then
+	if self.shield < 5 and not self.invencible then
 		self.nextShield = self.nextShield - dt
 		if self.nextShield <= 0 then
 			self.shield = self.shield + 1
