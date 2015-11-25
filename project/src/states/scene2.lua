@@ -236,6 +236,13 @@ function scene2:drawGUI()
 		end
 		love.graphics.printf("C", 20, 200, 100)
 	end
+
+	if hero.raybar == 500 or hero:isRayActive() then
+		local t = math.sin(self.timer * 100)
+		if t > 0 then
+			love.graphics.setColor(255, 0, 255, 255)
+		end
+	end
 	love.graphics.rectangle("fill", -200, 10, 180, hero.raybar)
 
 	love.graphics.setColor(255, 255, 255, 255)
@@ -243,8 +250,11 @@ end
 
 function scene2:draw()
 
+	local yshake = 10
+	if hero:isRayActive() then yshake = 40 end
+
 	local realx = center.x + math.random() * 0
-	local realy = center.y + math.random() * 10
+	local realy = center.y + math.random() * yshake
 
 	if hero:hasTurbo() then
 		cam:lookAt(realx, realy)
@@ -252,7 +262,7 @@ function scene2:draw()
 
 	-- render background
 	cam:attach()
-		if epilepsy == false then
+		if epilepsy == false and not hero:isRayActive() then
 			love.graphics.setShader(shader_bg)
 		else
 			love.graphics.setShader(shader_epi)
