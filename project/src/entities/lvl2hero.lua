@@ -44,7 +44,7 @@ function Lvl2Hero:init(world, stage)
 	self.ray = Lvl2Ray(self.world)
 	table.insert(self.stage, self.ray)
 
-	self:activateRay()
+	self:deactivateRay()
 
 	self.body = { isPlayer = true }
 	world:add(self.body, 600, 300, 90, 40) --Image.lvl2hero:getHeight() / 3)
