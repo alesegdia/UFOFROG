@@ -45,7 +45,7 @@ function Lvl2Ray:draw()
 end
 
 local col_filter = function(item, other)
-	if other.isEnemy or (other.isBoss and other.isActive) then
+	if other.isEnemy or other.isTurtle or (other.isBoss and other.isActive) then
 		return "cross"
 	end
 end
@@ -54,7 +54,15 @@ function Lvl2Ray:die()
 end
 
 function Lvl2Ray:update(dt)
-	self.world:move(self.body, self.x, self.y, col_filter)
+	if self.body.active then
+		local aX, aY, cols, len = self.world:move(self.body, self.x, self.y, col_filter)
+		for i=1,len do
+			local col = cols[i]
+			if col.other.isTurtle or col.other.isEnemy then
+				col.other.entity.isDead = true
+			end
+		end
+	end
 end
 
 return Lvl2Ray
