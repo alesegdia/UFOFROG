@@ -25,7 +25,7 @@ function Lvl2Ray:init(world)
 	self.body = { active = false }
 	self.x = 0
 	self.y = 0
-	self.world:add(self.body, self.x, self.y, Image.lvl2ray:getWidth(), Image.lvl2ray:getHeight())
+	self.world:add(self.body, self.x, self.y, Image.lvl2ray:getWidth()-60, Image.lvl2ray:getHeight())
 end
 
 function Lvl2Ray:activate()
