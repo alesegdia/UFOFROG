@@ -188,7 +188,25 @@ function Lvl2Hero:incRayBoost()
 	end
 end
 
+function Lvl2Hero:isRayActive()
+	return self.ray.body.active
+end
+
 function Lvl2Hero:update(dt)
+
+	self.timer = self.timer + dt
+
+	if self.raybar == 500 and love.keyboard.isDown("c") then
+		self:activateRay()
+	end
+
+	if self.raybar <= 0 then
+		self:deactivateRay()
+	end
+
+	if self:isRayActive() and self.raybar > 0 then
+		self.raybar = self.raybar - 5
+	end
 
 	-- movement boost control
 	local zpress = love.keyboard.isDown("z")
