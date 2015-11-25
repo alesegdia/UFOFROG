@@ -130,9 +130,24 @@ function Lvl2Hero:superMode()
 end
 
 function Lvl2Hero:draw()
+	local alfa = 255
+	if self.invencible then
+		local k = math.sin(self.timer * 30)
+		if k > 0 then
+			alfa = 0
+		else
+			alfa = 128
+		end
+	end
 	local x, y, w, h = self.world:getRect( self.body )
 	--love.graphics.rectangle("line", x, y, w, h)
+	if self:isRayActive() then
+		love.graphics.setColor(255, 0, 255, alfa)
+	else
+		love.graphics.setColor(255, 255, 255, alfa)
+	end
 	self.anim:draw(Image.lvl2hero, x+self.tw/2, y+self.th/2 - self.yoffset, self.rotation, 1, 1, self.tw/2, self.th/2)
+	love.graphics.setColor(255, 255, 255, 255)
 	--love.graphics.draw(Image.lvl2ray, x+self.tw, y)
 end
 
