@@ -51,19 +51,21 @@ function Lvl2Hero:init(world, stage)
 
 	self.swim_anim:assignFrameStart(1, function()
 		if not self.supermode then
-		if self.boost > 0 then
-			local x, y, _, _ = self.world:getRect(self.body)
-			table.insert(self.stage, Lvl2Smoke(x+20, y+20, 0.8, {r=0, g=255, b=255}))
-		end
+			love.audio.play(SfxWAV.lvl2swim)
+			if self.boost > 0 then
+				local x, y, _, _ = self.world:getRect(self.body)
+				table.insert(self.stage, Lvl2Smoke(x+20, y+20, 0.8, {r=0, g=255, b=255}))
+			end
 		end
 	end)
 
 	self.swim_anim:assignFrameStart(3, function()
 		if not self.supermode then
-		if self.boost > 0 then
-			local x, y, _, _ = self.world:getRect(self.body)
-			table.insert(self.stage, Lvl2Smoke(x+15, y+40, 0.8, {r=0, g=255, b=255}))
-		end
+			love.audio.play(SfxWAV.lvl2swim)
+			if self.boost > 0 then
+				local x, y, _, _ = self.world:getRect(self.body)
+				table.insert(self.stage, Lvl2Smoke(x+15, y+40, 0.8, {r=0, g=255, b=255}))
+			end
 		end
 	end)
 
@@ -91,6 +93,10 @@ end
 function Lvl2Hero:activateRay()
 	self.ray:activate()
 	self.anim = self.rayanim
+	SfxMP3.ray:setVolume(0.5)
+	SfxMP3.ray:setLooping(true)
+	SfxMP3.ray:stop()
+	SfxMP3.ray:play()
 end
 
 function Lvl2Hero:deactivateRay()
@@ -275,6 +281,9 @@ function Lvl2Hero:update(dt)
 
 	if love.keyboard.isDown(" ") and self.canShoot and letShoot then
 		self.nextShoot = self.cooldown
+		SfxMP3.shoot:setVolume(0.3)
+		love.audio.stop(SfxMP3.shoot)
+		love.audio.play(SfxMP3.shoot)
 		local range = math.random(-10,10)
 		table.insert(self.stage, Lvl2Tiro(self.world, self.stage, aX+40, aY+40 - self.yoffset, math.rad(90 + range) - self.rotation,
 			function()
@@ -291,6 +300,10 @@ function Lvl2Hero:update(dt)
 				self.nextShield = self.shieldRechargeDelay
 			end
 		end
+	end
+
+	if not self:isRayActive() then
+		love.audio.stop(SfxMP3.ray)
 	end
 end
 
