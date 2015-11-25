@@ -116,8 +116,11 @@ local setEnemySpawnRate = function(new_rate)
 	enemySpawnHandler = Timer.every(new_rate, spawnEnemy)
 end
 
+local theme
 
 function scene2:enter()
+	theme = love.audio.newSource("music/scene2theme.mp3")
+	theme:play()
 	shader_bg = love.graphics.newShader( shader_stage2 )
 	shader_epi = love.graphics.newShader( shaderepi_effect )
 	world = bump.newWorld( 120 )
