@@ -39,6 +39,8 @@ end
 function Lvl2Ray:draw()
 	if self.body.active then
 		love.graphics.draw(Image.lvl2ray, self.x, self.y)
+		local x, y, w, h = self.world:getRect(self.body)
+		--love.graphics.rectangle("fill", x, y, w, h)
 	end
 end
 
