@@ -45,6 +45,11 @@ function Lvl2Turtle:init(world, stage)
 
 	self.x, self.y = 0, 0
 
+	self.peohandle = Timer.every((750 / 3)/ self.speed, function()
+		SfxWAV.lvl2peotortu:setVolume(0.2)
+		love.audio.play(SfxWAV.lvl2peotortu)
+	end)
+
 end
 
 function Lvl2Turtle:draw()
@@ -62,6 +67,7 @@ end
 function Lvl2Turtle:die()
 	self.world:remove(self.body)
 	Timer.cancel(self.timerHandle)
+	Timer.cancel(self.peohandle)
 end
 
 function Lvl2Turtle:explode()
