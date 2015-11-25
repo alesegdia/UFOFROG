@@ -96,6 +96,10 @@ function Lvl2Boss:init(world, stage)
 
 	local theboss = self
 
+	Timer.after(0.5, function()
+		love.audio.play(SfxWAV.n4)
+	end)
+
 	self.states = {
 		wandering = {
 			timerhandle = {},
@@ -184,6 +188,11 @@ function Lvl2Boss:init(world, stage)
 				Timer.after(1, function()
 					that.hasFinished = true
 				end)
+				SfxWAV.lvl2danger:setVolume(0.5)
+				love.audio.play(SfxWAV.lvl2danger)
+				Timer.after(0.3, function() love.audio.play(SfxWAV.lvl2danger) end)
+				Timer.after(0.6, function() love.audio.play(SfxWAV.lvl2danger) end)
+				Timer.after(0.9, function() love.audio.play(SfxWAV.lvl2danger) end)
 			end,
 			leave = function(self)
 				theboss.danger = "no"
@@ -201,6 +210,11 @@ function Lvl2Boss:init(world, stage)
 				Timer.after(1, function()
 					that.hasFinished = true
 				end)
+				SfxWAV.lvl2danger:setVolume(0.5)
+				love.audio.play(SfxWAV.lvl2danger)
+				Timer.after(0.3, function() love.audio.play(SfxWAV.lvl2danger) end)
+				Timer.after(0.6, function() love.audio.play(SfxWAV.lvl2danger) end)
+				Timer.after(0.9, function() love.audio.play(SfxWAV.lvl2danger) end)
 			end,
 			leave = function(self)
 				theboss.danger = "no"
