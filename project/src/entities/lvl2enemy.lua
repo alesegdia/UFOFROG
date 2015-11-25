@@ -65,6 +65,7 @@ function Lvl2Enemy:explode()
 end
 
 function Lvl2Enemy:die()
+	self:explode()
 	self.world:remove(self.body)
 end
 

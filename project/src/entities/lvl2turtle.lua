@@ -66,6 +66,7 @@ end
 
 function Lvl2Turtle:die()
 	self.world:remove(self.body)
+	self:explode()
 	Timer.cancel(self.timerHandle)
 	Timer.cancel(self.peohandle)
 end
@@ -112,7 +113,6 @@ function Lvl2Turtle:update(dt)
 		local col = cols[i]
 		if col.other.isBullet then
 			self.isDead = true
-			self:explode()
 		end
 	end
 

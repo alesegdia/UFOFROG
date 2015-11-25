@@ -54,7 +54,7 @@ function Lvl2Tiro:update(dt)
 	for i=1,len do
 		local col = cols[i]
 		if col.other.isTurtle or col.other.isEnemy then
-			col.other.entity:explode()
+			col.other.entity.isDead = true
 			self.isDead = true
 			self.onDie()
 		elseif col.other.isBossBox then
