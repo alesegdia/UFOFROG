@@ -17,6 +17,9 @@ scene2 = {}
 local font = love.graphics.newFont("thin_pixel-7.ttf", 50)
 font:setFilter("nearest", "nearest", 0)
 
+local font3 = love.graphics.newFont("thin_pixel-7.ttf", 100)
+font:setFilter("nearest", "nearest", 0)
+
 local font2 = love.graphics.newFont("thin_pixel-7.ttf", 120)
 font2:setFilter("nearest", "nearest", 0)
 
@@ -207,7 +210,7 @@ function scene2:update(dt)
 	self.dt = dt
 end
 
-local drawGUI = function()
+function scene2:drawGUI()
 
 	-- draw health
 	love.graphics.setColor(255, 0, 255, 255)
@@ -221,6 +224,15 @@ local drawGUI = function()
 	end
 
 	love.graphics.setColor(255, 255, 0, 255)
+	if hero.raybar == 500 then
+		local v = math.sin(self.timer * 40)
+		if v > 0 then
+			love.graphics.setFont(font2)
+		else
+			love.graphics.setFont(font3)
+		end
+		love.graphics.printf("C", 20, 200, 100)
+	end
 	love.graphics.rectangle("fill", -200, 10, 180, hero.raybar)
 
 	love.graphics.setColor(255, 255, 255, 255)
@@ -256,7 +268,7 @@ function scene2:draw()
 			love.graphics.setColor(255, 255, 255, 255)
 		end
 
-		drawGUI()
+		self:drawGUI()
 	cam:detach()
 end
 
