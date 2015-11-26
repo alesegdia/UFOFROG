@@ -271,6 +271,10 @@ function Lvl2Boss:init(world, stage)
 
 	self.currentState = self.states.arriving
 	self:changeState(self.states.arriving)
+
+	self.health = 3
+
+	self.timer = 0
 end
 
 function Lvl2Boss:changeState(newState)
@@ -283,7 +287,35 @@ function Lvl2Boss:explode()
 
 end
 
+function Lvl2Boss:dealtDamage()
+	if not self.invulnerable then
+		self.health = self.health - 1
+		if self.health < 1 then
+			self.isDead = true
+		end
+		self.invulnerable = true
+		Timer.after(3, function() self.invulnerable = false end)
+		SfxWAV.n3:play()
+	end
+end
+
+function Lvl2Boss:die()
+
+end
+
 function Lvl2Boss:draw()
+
+	if self.invulnerable then
+		local alfa = math.sin(self.timer*20)
+		if alfa > 0 then
+			love.graphics.setColor(255,255,255,0)
+		else
+			love.graphics.setColor(255,255,255,255)
+		end
+	else
+		love.graphics.setColor(255,255,255,255)
+	end
+
 	for k,v in pairs(self.currentBodyData.data) do
 		local x, y, w, h = self.world:getRect(v)
 		--love.graphics.rectangle("line", x, y, w, h)
@@ -311,6 +343,7 @@ local col_filter = function(item, other)
 end
 
 function Lvl2Boss:update(dt)
+	self.timer = self.timer + dt
 	coroutine.resume(self.co)
 	self.anim:update(dt)
 	self.dangeranim:update(dt)
@@ -324,7 +357,13 @@ function Lvl2Boss:update(dt)
 		else
 			newx = element.x + self.x
 		end
-		self.world:move(element, newx, newy, col_filter)
+		local aX, aY, cols, len = self.world:move(element, newx, newy, col_filter)
+		for i=1,len do
+			local col = cols[i]
+			if col.other.isRay and element.isActive and element.name == "weak" and col.other.active then
+				self:dealtDamage()
+			end
+		end
 	end )
 end
 
