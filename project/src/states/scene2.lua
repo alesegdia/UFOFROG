@@ -128,8 +128,8 @@ function scene2:enter()
 	hero = Lvl2Hero( world, entities )
 	table.insert(entities, hero)
 
-	local t1, t2, t3, t4, t5, t6, t7, t8 = 1, 10, 20, 30, 40, 50, 70, 75
-	--local t1, t2, t3, t4, t5, t6, t7, t8 = 1, 2, 3, 4, 5, 6, 7, 10
+	local t1, t2, t3, t4, t5, t6, t7 = 1, 11, 23, 30, 40, 60, 65
+	--local t1, t2, t3, t4, t5, t6, t7 = 1, 2, 3, 4, 5, 6, 7
 
 	-- learn to swim
 	newEvent("repeat zx to boost\narrows to move", t1, 3, function() end)
