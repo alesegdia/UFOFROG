@@ -22,7 +22,7 @@ local Lvl2Ray = Class {
 
 function Lvl2Ray:init(world)
 	self.world = world
-	self.body = { active = false }
+	self.body = { active = false, isRay = true }
 	self.x = 0
 	self.y = 0
 	self.world:add(self.body, self.x, self.y, Image.lvl2ray:getWidth()-60, Image.lvl2ray:getHeight())
