@@ -289,7 +289,12 @@ function Lvl2Hero:update(dt)
 	local x, y, _, _ = self.world:getRect( self.body )
 	local newx, newy
 	newx = -dt * self.resistance + x + dx * self.boost * self.speed.x * dt
-	newy = y + dy * self.boost * self.speed.y * dt
+
+	if not self:isRayActive() then
+		newy = y + dy * self.boost * self.speed.y * dt
+	else
+		newy = y + dy * self.boost * self.speed.x * dt
+	end
 
 
 	if newx < -30 then newx = -30 end
