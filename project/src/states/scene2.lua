@@ -120,6 +120,7 @@ local theme
 
 function scene2:enter()
 	theme = love.audio.newSource("music/scene2theme.mp3")
+	theme:setVolume(0.5)
 	theme:play()
 	shader_bg = love.graphics.newShader( shader_stage2 )
 	shader_epi = love.graphics.newShader( shaderepi_effect )
@@ -139,33 +140,29 @@ function scene2:enter()
 	end)
 
 	-- you learnt to swim!
-	newEvent("No need to zx anymore!", t3, 3, function()
+	newEvent("SPACE FROG MODE!\n(protip: HOLD SPACE)", t3, 3, function()
 		hero:superMode()
-	end)
-
-	-- learn to shoot
-	newEvent("Wow! You can shoot!\n(pro tip: space)", t4, 3, function()
 		hero:giveShoot(18)
 	end)
 
-	newEvent("these tozoidans...\n kill them!", t5, 3, function()
+	newEvent("TOZODIANS!", t4, 1, function()
 		setEnemySpawnRate(0.5)
 	end)
 
 	-- you learnt to shoot!
-	newEvent("SUPER BULLET FROG!!", t6, 3, function()
+	newEvent("RAMBO FROG MODE!!!!11", t5, 3, function()
 		hero:giveSuperShoot()
 		setTurtleSpawnRate(0.1)
 		setEnemySpawnRate(0.1)
 	end)
 
-	newEvent("WTF EVERYONE'S OUT", t7, 3, function()
+	newEvent("WTF EVERYONE'S OUT", t6, 3, function()
 		hero:giveSuperShoot()
 		Timer.cancel(enemySpawnHandler)
 		Timer.cancel(turtleSpawnHandler)
 	end)
 
-	newEvent("OH SHIT THAT'S WHY", t8, 1, function()
+	newEvent("OH SHIT THAT'S WHY", t7, 1, function()
 		table.insert(entities, Lvl2Boss( world, entities ))
 	end)
 
