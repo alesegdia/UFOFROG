@@ -14,6 +14,7 @@ LIBRARYPATH = LIBRARYPATH .. "."
 local slam      = require( LIBRARYPATH.."slam"              )
 local Gamestate = require( LIBRARYPATH.."hump.gamestate"    )
 
+require 'src.states.selectscene'
 require 'src.states.scene1'
 require 'src.states.scene2'
 require 'constants'
@@ -29,7 +30,7 @@ function love.load(arg)
 	math.randomseed(os.time())
 	love.graphics.setDefaultFilter("nearest", "nearest")
 	Gamestate.registerEvents()
-	Gamestate.switch(scene2)
+	Gamestate.switch(selectscene)
 end
 
 -- Logic
