@@ -1,3 +1,9 @@
+--
+-- Creates a proxy via rawset.
+-- Credit goes to vrld: https://github.com/vrld/Princess/blob/master/main.lua
+-- easier, faster access and caching of resources like images and sound
+-- or on demand resource loading
+-- Initialization
 
 local function Proxy(f)
 	return setmetatable({}, {__index = function(self, k)

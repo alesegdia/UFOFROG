@@ -25,11 +25,6 @@ no_game_code = nil
 NO_WIDGET   = nil
 TILED_LOADER_PATH = nil
 
--- Creates a proxy via rawset.
--- Credit goes to vrld: https://github.com/vrld/Princess/blob/master/main.lua
--- easier, faster access and caching of resources like images and sound
--- or on demand resource loading
--- Initialization
 function love.load(arg)
 	math.randomseed(os.time())
 	love.graphics.setDefaultFilter("nearest", "nearest")
