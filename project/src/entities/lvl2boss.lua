@@ -362,6 +362,8 @@ function Lvl2Boss:update(dt)
 			local col = cols[i]
 			if col.other.isRay and element.isActive and element.name == "weak" and col.other.active then
 				self:dealtDamage()
+			elseif col.other.isPlayer and element.isActive then
+				col.other.entity:dealtDamage()
 			end
 		end
 	end )

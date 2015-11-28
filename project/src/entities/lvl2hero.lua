@@ -46,7 +46,7 @@ function Lvl2Hero:init(world, stage)
 
 	self:deactivateRay()
 
-	self.body = { isPlayer = true }
+	self.body = { isPlayer = true, entity = self }
 	world:add(self.body, 600, 300, 90, 40) --Image.lvl2hero:getHeight() / 3)
 
 	self.swim_anim:assignFrameStart(1, function()
