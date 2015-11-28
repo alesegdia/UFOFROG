@@ -62,11 +62,19 @@ function Lvl2Enemy:explode()
 		table.insert(self.stage, Lvl2Explosion(x + 40, y + 40, 1))
 	end)
 	self.isDead = true
+
+	self.explo = true
+
 end
 
 function Lvl2Enemy:die()
 	self:explode()
 	self.world:remove(self.body)
+	if self.explo then
+		SfxWAV.explo:setVolume(0.5)
+		SfxWAV.explo:stop()
+		SfxWAV.explo:play()
+	end
 end
 
 function Lvl2Enemy:advance()
@@ -86,7 +94,10 @@ function Lvl2Enemy:update(dt)
 
 	self.x, self.y = aX, aY
 
-	if x < -400 then self.isDead = true end
+	if x < -400 then
+		self.isDead = true
+		self.explo = false
+	end
 
 	if self.speed > 2000 then
 			table.insert(self.stage, Lvl2Smoke(x+80, y+40, 0.8, {r=255, g=0, b=0}))

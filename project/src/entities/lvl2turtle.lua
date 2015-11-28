@@ -113,6 +113,9 @@ function Lvl2Turtle:update(dt)
 		local col = cols[i]
 		if col.other.isBullet then
 			self.isDead = true
+			SfxWAV.explo:setVolume(0.5)
+			SfxWAV.explo:stop()
+			SfxWAV.explo:play()
 		end
 	end
 

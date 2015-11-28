@@ -58,6 +58,9 @@ function Lvl2Tiro:update(dt)
 			self.isDead = true
 			self.onDie()
 		elseif col.other.isBossBox then
+			SfxWAV.missboss:setVolume(0.5)
+			SfxWAV.missboss:stop()
+			SfxWAV.missboss:play()
 			self.isDead = true
 			table.insert(self.stage, Lvl2Explosion(aX, aY, 0.5))
 		end
