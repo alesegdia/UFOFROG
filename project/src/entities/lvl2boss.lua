@@ -297,8 +297,13 @@ function Lvl2Boss:dealtDamage()
 			self.killed = true
 			self.fixx = self.x
 			self.fixy = self.y
-			Timer.every(1, function()
-			
+			Timer.every(0.3, function()
+				local x, y
+				x = math.random(150, 350)
+				y = math.random(50, 400)
+				table.insert(self.stage, Lvl2Explosion(self.x + x, self.y + y, 1))
+				SfxWAV.bossexplo:setVolume(0.5)
+				SfxWAV.bossexplo:play()
 			end)
 		end
 		self.invulnerable = true
@@ -313,7 +318,7 @@ end
 
 function Lvl2Boss:draw()
 
-	if self.invulnerable then
+	if self.invulnerable or self.killed then
 		local alfa = math.sin(self.timer*20)
 		if alfa > 0 then
 			love.graphics.setColor(255,255,255,0)
@@ -354,9 +359,11 @@ function Lvl2Boss:update(dt)
 	if self.killed then
 		self.x = self.fixx
 		self.y = self.fixy
+	else
+		coroutine.resume(self.co)
 	end
+
 	self.timer = self.timer + dt
-	coroutine.resume(self.co)
 
 	if not self.killed then
 		self.anim:update(dt)
