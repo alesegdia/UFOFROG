@@ -121,7 +121,7 @@ function Lvl2Hero:superMode()
 	self.supermode = true
 	self.resistance = 100
 
-	Timer.every(0.03, function()
+	self.datimer = Timer.every(0.03, function()
 		local x, y, _, _ = self.world:getRect(self.body)
 		--table.insert(self.stage, Lvl2Smoke(x+40 + math.random()*10, y+40 + math.random()*10, 1, {r=0, g=255, b=255}))
 		--table.insert(self.stage, Lvl2Smoke(x+50 + math.random()*10, y+40 + math.random()*10, 2.5, {r=0, g=255, b=255}, 2))
@@ -164,7 +164,7 @@ local col_filter = function(item, other)
 end
 
 function Lvl2Hero:die()
-
+	Timer.cancel(self.datimer)
 end
 
 function Lvl2Hero:dealtDamage()
