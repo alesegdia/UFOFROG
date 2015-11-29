@@ -169,6 +169,9 @@ end
 
 function Lvl2Hero:dealtDamage()
 	if not self.invencible then
+		SfxWAV.hurt:setVolume(0.5)
+		SfxWAV.hurt:stop()
+		SfxWAV.hurt:play()
 		if self.shield > 0 then
 			self.shield = self.shield - 1
 		else
