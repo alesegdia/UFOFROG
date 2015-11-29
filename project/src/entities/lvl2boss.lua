@@ -10,6 +10,7 @@ local helper_anim8 = require 'src.helpers.anim8'
 local helper_boxedit = require 'src.helpers.boxedit'
 
 local Lvl2Enemy = require 'src.entities.lvl2enemy'
+local Lvl2Explosion = require 'src.entities.lvl2explosion'
 
 require 'src.helpers.proxy'
 
@@ -64,6 +65,8 @@ function Lvl2Boss:init(world, stage)
 	self.world = world
 	self.stage = stage
 	print(self.stage)
+
+	self.killed = false
 
 	self.timerhandle = {}
 
@@ -291,7 +294,12 @@ function Lvl2Boss:dealtDamage()
 	if not self.invulnerable then
 		self.health = self.health - 1
 		if self.health < 1 then
-			self.isDead = true
+			self.killed = true
+			self.fixx = self.x
+			self.fixy = self.y
+			Timer.every(1, function()
+			
+			end)
 		end
 		self.invulnerable = true
 		Timer.after(3, function() self.invulnerable = false end)
@@ -343,9 +351,17 @@ local col_filter = function(item, other)
 end
 
 function Lvl2Boss:update(dt)
+	if self.killed then
+		self.x = self.fixx
+		self.y = self.fixy
+	end
 	self.timer = self.timer + dt
 	coroutine.resume(self.co)
-	self.anim:update(dt)
+
+	if not self.killed then
+		self.anim:update(dt)
+	end
+
 	self.dangeranim:update(dt)
 	self.currentBodyData:each( function( element )
 		local aX, aY = self.world:getRect(element)
