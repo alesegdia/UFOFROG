@@ -117,8 +117,10 @@ local setEnemySpawnRate = function(new_rate)
 end
 
 local theme
+local boss
 
 function scene2:enter()
+	boss = {}
 	theme = love.audio.newSource("music/scene2theme.mp3")
 	theme:setVolume(0.5)
 	theme:play()
@@ -163,13 +165,21 @@ function scene2:enter()
 	end)
 
 	newEvent("OH SHIT THAT'S WHY", t7, 1, function()
-		table.insert(entities, Lvl2Boss( world, entities ))
+		boss = Lvl2Boss(world, entities)
+		table.insert(entities, boss)
 	end)
 
 	self.timer = 0
 end
 
+local alfa = 0
+
 function scene2:update(dt)
+
+	if boss.killed then
+		alfa = alfa + 50 * dt
+		if alfa > 255 then alfa = 255 end
+	end
 
 	self.timer = self.timer + dt
 
@@ -280,5 +290,9 @@ function scene2:draw()
 
 		self:drawGUI()
 	cam:detach()
+
+	love.graphics.setColor(0,0,0,alfa)
+	love.graphics.rectangle("fill", 0,0,1000,1000)
+	love.graphics.setColor(255,255,255,255)
 end
 
