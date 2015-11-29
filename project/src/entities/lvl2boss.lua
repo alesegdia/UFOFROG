@@ -278,6 +278,8 @@ function Lvl2Boss:init(world, stage)
 	self.health = 3
 
 	self.timer = 0
+
+	self.vol = 0.5
 end
 
 function Lvl2Boss:changeState(newState)
@@ -297,12 +299,13 @@ function Lvl2Boss:dealtDamage()
 			self.killed = true
 			self.fixx = self.x
 			self.fixy = self.y
+			tween(5, self, {vol = 0})
 			Timer.every(0.3, function()
 				local x, y
 				x = math.random(150, 350)
 				y = math.random(50, 400)
 				table.insert(self.stage, Lvl2Explosion(self.x + x, self.y + y, 1))
-				SfxWAV.bossexplo:setVolume(0.5)
+				SfxWAV.bossexplo:setVolume(self.vol)
 				SfxWAV.bossexplo:play()
 			end)
 		end
