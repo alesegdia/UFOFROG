@@ -38,7 +38,7 @@ function Hero:update(dt,rx,ry)
 
 	-- shot update
 	local do_shoot = false
-	if love.keyboard.isDown(" ") then
+	if love.keyboard.isDown("space") then
 		do_shoot = true
 	end
 

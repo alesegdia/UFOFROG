@@ -330,7 +330,7 @@ function Lvl2Hero:update(dt)
 
 	local letShoot = self.nextShoot < 0
 
-	if love.keyboard.isDown(" ") and not self:isRayActive() and self.canShoot and letShoot then
+	if love.keyboard.isDown("space") and not self:isRayActive() and self.canShoot and letShoot then
 		self.nextShoot = self.cooldown
 		SfxMP3.shoot:setVolume(0.3)
 		love.audio.stop(SfxMP3.shoot)
